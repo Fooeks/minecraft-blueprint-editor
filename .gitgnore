@@ -1,0 +1,6 @@
+# Credenciais do banco de dados
+config/database.php
+
+# Arquivos do sistema
+Thumbs.db
+desktop.ini
