@@ -1,0 +1,17 @@
+CREATE TABLE usuario (
+    id_visitante CHAR(36) PRIMARY KEY,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ultimo_acesso TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+
+CREATE TABLE projeto (
+    id_projeto CHAR(36) PRIMARY KEY,
+    id_visitante CHAR(36) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    dimensao_x INT NOT NULL CHECK (dimensao_x BETWEEN 1 AND 500),
+    dimensao_z INT NOT NULL CHECK (dimensao_z BETWEEN 1 AND 500),
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_visitante) REFERENCES usuario(id_visitante) ON DELETE CASCADE
+) ENGINE=InnoDB;
