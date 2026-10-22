@@ -10,6 +10,10 @@ function abrirConexao(): PDO
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
-
-    return new PDO($dsn, $cfg['user'], $cfg['pass'], $opcoes);
+    try {
+        return new PDO($dsn, $cfg['user'], $cfg['pass'], $opcoes);
+    } catch (PDOException $e) {
+        error_log('Falha de conexão: ' . $e->getMessage());
+        throw new RuntimeException('Não foi possível conectar ao banco de dados.');
+    }
 }
