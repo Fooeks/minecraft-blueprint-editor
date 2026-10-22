@@ -1,5 +1,6 @@
 # Credenciais do banco de dados
 config/database.php
+.vscode/sftp.json
 
 # Arquivos do sistema
 Thumbs.db
