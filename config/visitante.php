@@ -2,7 +2,7 @@
 
 function gerarID(): string
 {
-    $bytes = random_bytes(16); 
+    $bytes = random_bytes(16);
     
     $byte = ord($bytes[6]);
     $byte = ($byte & 0x0F) | 0x40;
@@ -25,11 +25,26 @@ function validarID(string $uuid): bool
     return $valido;
 }
 
-function verificarUsuario(PDO $pdo, string $id): bool
+function verificarUsuario(PDO $pdo, string $uuid): bool
 {
     $stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE id_visitante = :id_visitante');
-    $stmt->execute([':id_visitante' => $id]);
+    $stmt->execute([':id_visitante' => $uuid]);
     $achou = $stmt->fetch() !== false;
 
     return $achou;
+}
+
+function criarUsuario(PDO $pdo): string
+{
+    $uuid = gerarID();
+    $stmt = $pdo->prepare('INSERT INTO usuario (id_visitante) VALUES (:id_visitante)');
+    $stmt->execute([':id_visitante' => $uuid]);
+
+    return $uuid;
+}
+
+function registrarAcesso(PDO $pdo, string $uuid): void
+{
+    $stmt = $pdo->prepare('UPDATE usuario SET ultimo_acesso = NOW() WHERE id_visitante = :id_visitante');
+    $stmt->execute([':id_visitante' => $uuid]);
 }
