@@ -21,5 +21,15 @@ function gerarID(): string
 function validarID(string $uuid): bool
 {
     $valido = preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) === 1;
+    
     return $valido;
+}
+
+function verificarUsuario(PDO $pdo, string $id): bool
+{
+    $stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE id_visitante = :id_visitante');
+    $stmt->execute([':id_visitante' => $id]);
+    $achou = $stmt->fetch() !== false;
+
+    return $achou;
 }
