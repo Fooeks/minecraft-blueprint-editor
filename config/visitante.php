@@ -62,3 +62,63 @@ function enviarCookie(string $uuid): void
         'samesite' => 'Lax',
     ]);
 }
+
+function lerIDValido(): ?string
+{
+    if (!isset($_COOKIE['id_visitante'])) {
+        return null;
+    }
+
+    if (!is_string($_COOKIE['id_visitante'])) {
+        return null;
+    }
+
+    if (!validarID($_COOKIE['id_visitante'])) {
+        return null;
+    }
+
+    return $_COOKIE['id_visitante'];
+}
+
+function buscarUsuario(PDO $pdo): ?string
+{
+    $uuid = lerIDValido();
+
+    if ($uuid === null || !verificarUsuario($pdo, $uuid)) {
+        return null;
+    }
+
+    registrarAcesso($pdo, $uuid);
+    enviarCookie($uuid);
+
+    return $uuid;
+}
+
+function limparUsuarioInativo(PDO $pdo, int $dias, int $limite): void
+{
+    $stmt = $pdo->prepare(
+        'DELETE FROM usuario
+         WHERE ultimo_acesso < NOW() - INTERVAL :dias DAY
+         LIMIT :limite'
+    );
+    $stmt->bindValue(':dias', $dias, PDO::PARAM_INT);
+    $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmt->execute();
+}
+
+function identificarUsuario(PDO $pdo): string
+{
+    $uuid = buscarUsuario($pdo);
+
+    if ($uuid === null) {
+        $uuid = criarUsuario($pdo);
+        enviarCookie($uuid);
+        try {
+            limparUsuarioInativo($pdo, 401, 1);
+        } catch (PDOException $e) {
+            error_log('Falha na limpeza: ' . $e->getMessage());
+        }
+    }
+
+    return $uuid;
+}
