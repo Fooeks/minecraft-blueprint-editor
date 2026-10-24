@@ -48,3 +48,17 @@ function registrarAcesso(PDO $pdo, string $uuid): void
     $stmt = $pdo->prepare('UPDATE usuario SET ultimo_acesso = NOW() WHERE id_visitante = :id_visitante');
     $stmt->execute([':id_visitante' => $uuid]);
 }
+
+function enviarCookie(string $uuid): void
+{
+    $validade = time() + (400 * 24 * 60 * 60);
+    $seguro = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+    setcookie('id_visitante', $uuid, [
+        'expires' => $validade,
+        'path' => '/',
+        'secure' => $seguro,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}

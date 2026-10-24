@@ -5,3 +5,6 @@ config/database.php
 # Arquivos do sistema
 Thumbs.db
 desktop.ini
+
+# Arquivos Temporários
+teste.php
