@@ -1,4 +1,5 @@
 <?php
+
 function abrirConexao(): PDO
 {
     $cfg = require __DIR__ . '/database.php';

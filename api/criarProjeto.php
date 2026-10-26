@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../config/visitante.php';
+require_once __DIR__ . '/../config/projeto.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -70,3 +71,25 @@ try {
     echo json_encode(['erro' => 'Erro interno do servidor.']);
     exit;
 }
+
+try {
+    $pdo->beginTransaction();
+    $idProjeto = inserirProjeto($pdo, $uuid, $nome, $x, $z);
+    inserirCamadaY($pdo, $idProjeto, 1);
+    $pdo->commit();
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('Falha ao criar projeto: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['erro' => 'Não foi possível criar o projeto.']);
+    exit;
+}
+
+echo json_encode([
+    'idProjeto' => $idProjeto,
+    'nome'      => $nome,
+    'dimensaoX' => $x,
+    'dimensaoZ' => $z,
+]);
