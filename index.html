@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Blueprint Editor</title>
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+
+<body>
+
+    <header id="gestao-projetos">
+        <button id="btn-novo" type="button">Novo</button>
+        <button id="btn-abrir" type="button">Abrir</button>
+        <button id="btn-salvar" type="button">Salvar</button>
+        <button id="btn-excluir" type="button">Excluir</button>
+        <button id="btn-importar" type="button">Importar</button>
+        <button id="btn-exportar" type="button">Exportar</button>
+    </header>
+
+    <nav id="barra-ferramentas">
+        <button id="ferr-desfazer" type="button" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">Desfazer</button>
+        <button id="ferr-refazer" type="button" title="Refazer (Ctrl+Y)" aria-label="Refazer">Refazer</button>
+        <button id="ferr-zoom-in" type="button" title="Zoom in (Scroll)" aria-label="Zoom in">Zoom in</button>
+        <button id="ferr-zoom-out" type="button" title="Zoom out (Scroll)" aria-label="Zoom out">Zoom out</button>
+        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção">Seleção</button>
+        <button id="ferr-mover" type="button" title="Mover (Barra de espaço)" aria-label="Mover">Mover</button>
+        <button id="ferr-pincel" type="button" title="Pincel" aria-label="Pincel">Pincel</button>
+        <button id="ferr-balde" type="button" title="Balde" aria-label="Balde">Balde</button>
+        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas">Formas</button>
+        <button id="ferr-borracha" type="button" title="Borracha (E)" aria-label="Borracha">Borracha</button>
+        <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua">Régua</button>
+    </nav>
+
+    <div id="editor">
+        
+        <aside id="camada-y">
+            <label for="campo-camada-y">Y</label>
+            <input id="campo-camada-y" type="number" min="1" max="99" value="1">
+            <input id="slider-camada-y" type="range" aria-label="Camada Y" min="1" max="99" value="1">
+        </aside>
+
+        <main id="grid-desenho">
+            <canvas id="grid"></canvas>
+            <p id="mensagem-vazio">Selecione "Novo", "Abrir" ou "Importar" para começar um projeto.</p>
+        </main>
+
+        <aside id="painel-lateral">
+            <div id="abas">
+                <button id="aba-cor" type="button">Cor</button>
+                <button id="aba-propriedades" type="button">Propriedades</button>
+                <button id="aba-lista" type="button">Lista</button>
+            </div>
+
+            <section id="conteudo-cor">
+                <p>Conteúdo da aba Cor</p>
+            </section>
+            <section id="conteudo-propriedades">
+                <p>Conteúdo da aba Propriedades</p>
+            </section>
+            <section id="conteudo-lista">
+                <p>Conteúdo da aba Lista</p>
+            </section>
+        </aside>
+    
+    </div>
+
+</body>
+</html>
