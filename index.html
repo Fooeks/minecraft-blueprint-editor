@@ -41,8 +41,8 @@
             <input id="slider-camada-y" type="range" aria-label="Camada Y" min="1" max="99" value="1">
         </aside>
 
-        <main id="grid-desenho">
-            <canvas id="grid"></canvas>
+        <main id="grid">
+            <canvas id="grid-desenho" hidden></canvas>
             <p id="mensagem-vazio">Selecione "Novo", "Abrir" ou "Importar" para começar um projeto.</p>
         </main>
 
@@ -78,11 +78,11 @@
         <input id="campo-dimensao-z" type="number" min="1" max="500" value="10">
 
         <p id="criar-alerta" role="alert" hidden></p>
-        <button id="btn-criar-cancelar" type="button">Cancelar</button>
         <button id="btn-criar-confirmar" type="button">Criar</button>
+        <button id="btn-criar-cancelar" type="button">Cancelar</button>
     </dialog>
 
-     <script src="js/editor.js"></script>
+     <script type="module" src="js/editor.js"></script>
 
 </body>
 </html>

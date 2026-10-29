@@ -44,8 +44,17 @@ body {
     min-height: 0;
 }
 
-#grid-desenho {
+#grid {
     overflow: hidden;
+}
+
+#grid-desenho {
+    display: block;
+    background: #c49f56;
+}
+
+#grid-desenho[hidden] {
+    display: none;
 }
 
 #painel-lateral {
