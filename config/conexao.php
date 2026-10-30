@@ -12,7 +12,9 @@ function abrirConexao(): PDO
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
     try {
-        return new PDO($dsn, $cfg['user'], $cfg['pass'], $opcoes);
+        $pdo = new PDO($dsn, $cfg['user'], $cfg['pass'], $opcoes);
+        $pdo->exec("SET time_zone = '+00:00'");
+        return $pdo;
     } catch (PDOException $e) {
         error_log('Falha de conexão: ' . $e->getMessage());
         throw new RuntimeException('Não foi possível conectar ao banco de dados.');

@@ -31,3 +31,18 @@ function inserirCamadaY(PDO $pdo, string $idProjeto, int $nivelY): int
 
     return (int) $pdo->lastInsertId();
 }
+
+function listarProjetos(PDO $pdo, string $uuid): array
+{
+    $sql = "SELECT id_projeto AS idProjeto,
+                   nome,
+                   DATE_FORMAT(data_atualizacao, '%Y-%m-%dT%H:%i:%sZ') AS dataAtualizacao
+            FROM projeto
+            WHERE id_visitante = :id_visitante
+            ORDER BY data_atualizacao DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id_visitante' => $uuid]);
+
+    return $stmt->fetchAll();
+}
