@@ -46,3 +46,33 @@ function listarProjetos(PDO $pdo, string $uuid): array
 
     return $stmt->fetchAll();
 }
+
+function buscarProjeto(PDO $pdo, string $uuid, string $idProjeto): ?array
+{
+    $sql = "SELECT id_projeto AS idProjeto,
+                   nome,
+                   dimensao_x AS dimensaoX,
+                   dimensao_z AS dimensaoZ
+            FROM projeto
+            WHERE id_projeto = :id_projeto
+              AND id_visitante = :id_visitante";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id_projeto'   => $idProjeto,
+        ':id_visitante' => $uuid,
+    ]);
+
+    $linha = $stmt->fetch();
+
+    if ($linha === false) {
+        return null;
+    }
+
+    return [
+        'idProjeto' => $linha['idProjeto'],
+        'nome'    => $linha['nome'],
+        'dimensaoX'  => (int) $linha['dimensaoX'],
+        'dimensaoZ'  => (int) $linha['dimensaoZ'],
+    ];
+}
