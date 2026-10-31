@@ -96,6 +96,32 @@
         <button type="button" id="btn-abrir-cancelar">Cancelar</button>
     </dialog>
 
+    <dialog id="excluir-projeto" closedby="any">
+        <h2>Selecionar projeto</h2>
+
+        <fieldset id="excluir-lista">
+            <legend>Projetos disponíveis</legend>
+        </fieldset>
+
+        <p id="excluir-vazio" hidden>Nenhum projeto encontrado.</p>
+        <p id="excluir-alerta" role="alert" hidden></p>
+
+        <button type="button" id="btn-excluir-confirmar">Excluir</button>
+        <button type="button" id="btn-excluir-cancelar">Cancelar</button>
+    </dialog>
+
+    <dialog id="excluir-projeto-confirmacao" closedby="any">
+        <h2>Excluir projeto</h2>
+
+        <p>Deseja mesmo excluir o projeto <strong id="excluir-confirmacao-nome"></strong>?</p>
+        <p>Esta ação não pode ser desfeita.</p>
+
+        <p id="excluir-confirmacao-alerta" role="alert" hidden></p>
+
+        <button type="button" id="btn-excluir-confirmacao-confirmar">Confirmar</button>
+        <button type="button" id="btn-excluir-confirmacao-cancelar">Cancelar</button>
+    </dialog>
+
      <script type="module" src="js/editor.js"></script>
 
 </body>

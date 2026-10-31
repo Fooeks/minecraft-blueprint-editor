@@ -76,3 +76,16 @@ function buscarProjeto(PDO $pdo, string $uuid, string $idProjeto): ?array
         'dimensaoZ'  => (int) $linha['dimensaoZ'],
     ];
 }
+
+function excluirProjeto(PDO $pdo, string $uuid, string $idProjeto): void
+{
+    $stmt = $pdo->prepare(
+        'DELETE FROM projeto
+         WHERE id_projeto = :id_projeto
+           AND id_visitante = :id_visitante'
+    );
+    $stmt->execute([
+        ':id_projeto'    => $idProjeto,
+        ':id_visitante'  => $uuid,
+    ]);
+}
