@@ -1,6 +1,7 @@
 import { montarListaProjetos } from "./lista.js";
 import { estado } from "../estado.js";
 import { limparProjeto } from "../grid.js";
+import { apagarUltimoProjeto } from "../armazenamento.js";
 
 const excluirProjetoBotao = document.getElementById("btn-excluir");
 const excluirProjetoJanela = document.getElementById("excluir-projeto");
@@ -91,6 +92,7 @@ export function excluirProjetoIniciar() {
 
             if (estado.projetoAberto !== null && estado.projetoAberto.idProjeto === idProjeto) {
                 limparProjeto();
+                apagarUltimoProjeto();
             }
 
             excluirProjetoConfirmacaoJanela.close();

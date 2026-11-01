@@ -1,4 +1,5 @@
 import { estado } from "./estado.js";
+import { guardarUltimoProjeto } from "./armazenamento.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -43,7 +44,7 @@ export function exibirProjeto(projeto) {
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
     criarGrid();
-    console.log(estado.projetoAberto);
+    guardarUltimoProjeto(projeto.idProjeto);
 }
 
 export function limparProjeto() {
