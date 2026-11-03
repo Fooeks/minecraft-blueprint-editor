@@ -64,8 +64,29 @@ function criarGrid() {
     contexto.stroke();
 }
 
+function limitarEixo(inicio, tamanhoGrid, tamanhoVisivel, minimoVisivel) {
+    const minimo = Math.min(minimoVisivel, tamanhoGrid);
+    const menorInicio = minimo - tamanhoVisivel;
+    const maiorInicio = tamanhoGrid - minimo;
+
+    return Math.max(menorInicio, Math.min(inicio, maiorInicio));
+}
+
+function limitarCamera() {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    const visivelX = gridDesenho.width / estado.camera.pixelsPorCelula;
+    const visivelZ = gridDesenho.height / estado.camera.pixelsPorCelula;
+
+    estado.camera.deslocamentoX = limitarEixo(estado.camera.deslocamentoX, estado.projetoAberto.dimensaoX, visivelX, 2);
+    estado.camera.deslocamentoZ = limitarEixo(estado.camera.deslocamentoZ, estado.projetoAberto.dimensaoZ, visivelZ, 2);
+}
+
 function redesenhar() {
     redesenhoPendente = false;
+    limitarCamera();
     criarGrid();
 }
 
@@ -78,8 +99,15 @@ export function pedirRedesenho() {
     requestAnimationFrame(redesenhar);
 }
 
+function reiniciarCamera() {
+    estado.camera.deslocamentoX = 0;
+    estado.camera.deslocamentoZ = 0;
+}
+
+
 export function exibirProjeto(projeto) {
     estado.projetoAberto = projeto;
+    reiniciarCamera();
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
     pedirRedesenho();

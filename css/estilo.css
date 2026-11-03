@@ -16,6 +16,11 @@ body {
     border-bottom: 1px solid #888;
 }
 
+#barra-ferramentas button.marcado {
+    background: #333;
+    color: #fff;
+}
+
 #editor {
     display: grid;
     grid-template-columns: 60px minmax(0, 1fr) 280px;
@@ -51,6 +56,7 @@ body {
 #grid-desenho {
     display: block;
     background: #c49f56;
+    touch-action: none;
 }
 
 #grid-desenho[hidden] {
