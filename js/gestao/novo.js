@@ -25,8 +25,8 @@ export function novoProjetoIniciar(){
 
     novoProjetoJanela.addEventListener("close", function () {
         novoProjetoNome.value = "";
-        novoProjetoDimensaoX.value = 10;
-        novoProjetoDimensaoZ.value = 10;
+        novoProjetoDimensaoX.value = 100;
+        novoProjetoDimensaoZ.value = 100;
         novoProjetoAlerta.hidden = true;
     });
 

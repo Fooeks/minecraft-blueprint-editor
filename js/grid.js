@@ -16,11 +16,11 @@ function celulaZParaPixel(celulaZ) {
     return (celulaZ - estado.camera.deslocamentoZ) * estado.camera.pixelsPorCelula;
 }
 
-function pixelParaCelulaX(pixel) {
+export function pixelParaCelulaX(pixel) {
     return pixel / estado.camera.pixelsPorCelula + estado.camera.deslocamentoX;
 }
 
-function pixelParaCelulaZ(pixel) {
+export function pixelParaCelulaZ(pixel) {
     return pixel / estado.camera.pixelsPorCelula + estado.camera.deslocamentoZ;
 }
 
@@ -72,6 +72,40 @@ function limitarEixo(inicio, tamanhoGrid, tamanhoVisivel, minimoVisivel) {
     return Math.max(menorInicio, Math.min(inicio, maiorInicio));
 }
 
+function restringirValor(valor, minimo, maximo) {
+    const minimoValido = Math.min(minimo, maximo);
+    return Math.max(minimoValido, Math.min(valor, maximo));
+}
+
+function calcularTamanhoMinimoCelula(dimensaoX, dimensaoZ, celulaX, celulaZ) {
+    const tamanhoPorX = celulaX / dimensaoX;
+    const tamanhoPorZ = celulaZ / dimensaoZ;
+
+    return Math.min(tamanhoPorX, tamanhoPorZ);
+}
+
+export function restringirTamanhoCelula(tamanho) {
+    const minimo = calcularTamanhoMinimoCelula(estado.projetoAberto.dimensaoX, estado.projetoAberto.dimensaoZ, gridDesenho.width, gridDesenho.height);
+
+    return restringirValor(tamanho, minimo, 60);
+}
+
+function aplicarLimiteDeTamanho() {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    estado.camera.pixelsPorCelula = restringirTamanhoCelula(estado.camera.pixelsPorCelula);
+}
+
+function centralizarCamera() {
+    const visivelX = gridDesenho.width / estado.camera.pixelsPorCelula;
+    const visivelZ = gridDesenho.height / estado.camera.pixelsPorCelula;
+
+    estado.camera.deslocamentoX = (estado.projetoAberto.dimensaoX - visivelX) / 2;
+    estado.camera.deslocamentoZ = (estado.projetoAberto.dimensaoZ - visivelZ) / 2;
+}
+
 function limitarCamera() {
     if (estado.projetoAberto === null) {
         return;
@@ -80,12 +114,13 @@ function limitarCamera() {
     const visivelX = gridDesenho.width / estado.camera.pixelsPorCelula;
     const visivelZ = gridDesenho.height / estado.camera.pixelsPorCelula;
 
-    estado.camera.deslocamentoX = limitarEixo(estado.camera.deslocamentoX, estado.projetoAberto.dimensaoX, visivelX, 2);
-    estado.camera.deslocamentoZ = limitarEixo(estado.camera.deslocamentoZ, estado.projetoAberto.dimensaoZ, visivelZ, 2);
+    estado.camera.deslocamentoX = limitarEixo(estado.camera.deslocamentoX, estado.projetoAberto.dimensaoX, visivelX, 40 / estado.camera.pixelsPorCelula);
+    estado.camera.deslocamentoZ = limitarEixo(estado.camera.deslocamentoZ, estado.projetoAberto.dimensaoZ, visivelZ, 40 / estado.camera.pixelsPorCelula);
 }
 
 function redesenhar() {
     redesenhoPendente = false;
+    aplicarLimiteDeTamanho();
     limitarCamera();
     criarGrid();
 }
@@ -100,8 +135,8 @@ export function pedirRedesenho() {
 }
 
 function reiniciarCamera() {
-    estado.camera.deslocamentoX = 0;
-    estado.camera.deslocamentoZ = 0;
+    estado.camera.pixelsPorCelula = restringirTamanhoCelula(20);
+    centralizarCamera();
 }
 
 
