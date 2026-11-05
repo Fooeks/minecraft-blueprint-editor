@@ -1,5 +1,6 @@
 import { estado } from "./estado.js";
 import { guardarUltimoProjeto } from "./armazenamento.js";
+import { celulasDescartar, celulasPercorrer } from "./celulas.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -24,38 +25,42 @@ export function pixelParaCelulaZ(pixel) {
     return pixel / estado.camera.pixelsPorCelula + estado.camera.deslocamentoZ;
 }
 
+function calcularLimitesVisiveis() {
+    const totalCelulasX = estado.projetoAberto.dimensaoX;
+    const totalCelulasZ = estado.projetoAberto.dimensaoZ;
+
+    return {
+        primeiraCelulaX: Math.max(0, Math.floor(estado.camera.deslocamentoX)),
+        ultimaCelulaX: Math.min(totalCelulasX, Math.ceil(pixelParaCelulaX(gridDesenho.width))),
+        primeiraCelulaZ: Math.max(0, Math.floor(estado.camera.deslocamentoZ)),
+        ultimaCelulaZ: Math.min(totalCelulasZ, Math.ceil(pixelParaCelulaZ(gridDesenho.height)))
+    };
+}
+
 function criarGrid() {
     if (estado.projetoAberto === null) {
         return;
     }
 
-    const dimensaoX = estado.projetoAberto.dimensaoX;
-    const dimensaoZ = estado.projetoAberto.dimensaoZ;
+    const limites = calcularLimitesVisiveis();
 
-    contexto.clearRect(0, 0, gridDesenho.width, gridDesenho.height);
     contexto.strokeStyle = "#e40d0d";
     contexto.lineWidth = 1;
 
-    const primeiraCelulaX = Math.max(0, Math.floor(estado.camera.deslocamentoX));
-    const ultimaCelulaX = Math.min(dimensaoX, Math.ceil(pixelParaCelulaX(gridDesenho.width)));
-    const primeiraCelulaZ = Math.max(0, Math.floor(estado.camera.deslocamentoZ));
-    const ultimaCelulaZ = Math.min(dimensaoZ, Math.ceil(pixelParaCelulaZ(gridDesenho.height)));
-
-    const topo = celulaZParaPixel(primeiraCelulaZ);
-    const base = celulaZParaPixel(ultimaCelulaZ);
-    const esquerda = celulaXParaPixel(primeiraCelulaX);
-    const direita = celulaXParaPixel(ultimaCelulaX);
-
+    const topo = celulaZParaPixel(limites.primeiraCelulaZ);
+    const base = celulaZParaPixel(limites.ultimaCelulaZ);
+    const esquerda = celulaXParaPixel(limites.primeiraCelulaX);
+    const direita = celulaXParaPixel(limites.ultimaCelulaX);
 
     contexto.beginPath();
 
-    for (let celulaX = primeiraCelulaX; celulaX <= ultimaCelulaX; celulaX++) {
+    for (let celulaX = limites.primeiraCelulaX; celulaX <= limites.ultimaCelulaX; celulaX++) {
         const x = celulaXParaPixel(celulaX) + 0.5;
         contexto.moveTo(x, topo);
         contexto.lineTo(x, base);
     }
 
-    for (let celulaZ = primeiraCelulaZ; celulaZ <= ultimaCelulaZ; celulaZ++) {
+    for (let celulaZ = limites.primeiraCelulaZ; celulaZ <= limites.ultimaCelulaZ; celulaZ++) {
         const z = celulaZParaPixel(celulaZ) + 0.5;
         contexto.moveTo(esquerda, z);
         contexto.lineTo(direita, z);
@@ -118,10 +123,37 @@ function limitarCamera() {
     estado.camera.deslocamentoZ = limitarEixo(estado.camera.deslocamentoZ, estado.projetoAberto.dimensaoZ, visivelZ, 40 / estado.camera.pixelsPorCelula);
 }
 
+function desenharCelulas() {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    const limites = calcularLimitesVisiveis();
+    const tamanho = estado.camera.pixelsPorCelula;
+    let corAtual = null;
+
+    celulasPercorrer(estado.camadaAtiva, limites, (celulaX, celulaZ, lista) => {
+        const celula = lista[0];
+
+        if (celula.cor !== corAtual) {
+            contexto.fillStyle = celula.cor;
+            corAtual = celula.cor;
+        }
+
+        contexto.fillRect(celulaXParaPixel(celulaX), celulaZParaPixel(celulaZ), tamanho, tamanho);
+    });
+}
+
+function limparDesenho() {
+    contexto.clearRect(0, 0, gridDesenho.width, gridDesenho.height);
+}
+
 function redesenhar() {
     redesenhoPendente = false;
     aplicarLimiteDeTamanho();
     limitarCamera();
+    limparDesenho();
+    desenharCelulas();
     criarGrid();
 }
 
@@ -142,6 +174,7 @@ function reiniciarCamera() {
 
 export function exibirProjeto(projeto) {
     estado.projetoAberto = projeto;
+    celulasDescartar();
     reiniciarCamera();
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
@@ -151,6 +184,7 @@ export function exibirProjeto(projeto) {
 
 export function limparProjeto() {
     estado.projetoAberto = null;
+    celulasDescartar();
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;
 }
