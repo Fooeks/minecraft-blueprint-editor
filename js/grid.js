@@ -1,11 +1,13 @@
 import { estado } from "./estado.js";
 import { guardarUltimoProjeto } from "./armazenamento.js";
-import { celulasDescartar, celulasPercorrer } from "./celulas.js";
+import { celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
 const gridDesenho = document.getElementById("grid-desenho");
 const contexto = gridDesenho.getContext("2d");
+const camadaYCampo = document.getElementById("campo-camada-y");
+const camadaYSlider = document.getElementById("slider-camada-y");
 
 let redesenhoPendente = false;
 
@@ -123,16 +125,16 @@ function limitarCamera() {
     estado.camera.deslocamentoZ = limitarEixo(estado.camera.deslocamentoZ, estado.projetoAberto.dimensaoZ, visivelZ, 40 / estado.camera.pixelsPorCelula);
 }
 
-function desenharCelulas() {
-    if (estado.projetoAberto === null) {
-        return;
-    }
+const opacidadeCamadaYAbaixo = 0.3;
 
+function desenharCamadaY(nivelY, opacidade) {
     const limites = calcularLimitesVisiveis();
     const tamanho = estado.camera.pixelsPorCelula;
     let corAtual = null;
 
-    celulasPercorrer(estado.camadaAtiva, limites, (celulaX, celulaZ, lista) => {
+    contexto.globalAlpha = opacidade;
+
+    celulasPercorrer(nivelY, limites, (celulaX, celulaZ, lista) => {
         const celula = lista[0];
 
         if (celula.cor !== corAtual) {
@@ -142,6 +144,20 @@ function desenharCelulas() {
 
         contexto.fillRect(celulaXParaPixel(celulaX), celulaZParaPixel(celulaZ), tamanho, tamanho);
     });
+
+    contexto.globalAlpha = 1;
+}
+
+function desenharCelulas() {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    if (estado.camadaAtiva > 1) {
+        desenharCamadaY(estado.camadaAtiva - 1, opacidadeCamadaYAbaixo);
+    }
+
+    desenharCamadaY(estado.camadaAtiva, 1);
 }
 
 function limparDesenho() {
@@ -166,6 +182,13 @@ export function pedirRedesenho() {
     requestAnimationFrame(redesenhar);
 }
 
+function reiniciarCamadaY() {
+    estado.camadaAtiva = 1;
+    camadaYCampo.value = estado.camadaAtiva;
+    camadaYSlider.max = celulasLimiteCamadaY(estado.camadaAtiva);
+    camadaYSlider.value = estado.camadaAtiva;
+}
+
 function reiniciarCamera() {
     estado.camera.pixelsPorCelula = restringirTamanhoCelula(20);
     centralizarCamera();
@@ -175,6 +198,7 @@ function reiniciarCamera() {
 export function exibirProjeto(projeto) {
     estado.projetoAberto = projeto;
     celulasDescartar();
+    reiniciarCamadaY();
     reiniciarCamera();
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
@@ -185,6 +209,7 @@ export function exibirProjeto(projeto) {
 export function limparProjeto() {
     estado.projetoAberto = null;
     celulasDescartar();
+    reiniciarCamadaY();
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;
 }

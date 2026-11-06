@@ -121,3 +121,34 @@ export function celulasPercorrer(nivelY, limites, tratador) {
         tratador(celulaX, celulaZ, lista);
     });
 }
+
+export function celulasMaiorCamadaY() {
+    let maiorCamadaY = 0;
+
+    estado.camadas.forEach((posicoes, nivelY) => {
+        if (posicoes.size > 0 && nivelY > maiorCamadaY) {
+            maiorCamadaY = nivelY;
+        }
+    });
+
+    return maiorCamadaY;
+}
+
+export function celulasApagarCamadasYVazias() {
+    const maiorCamadaY = celulasMaiorCamadaY();
+
+    estado.camadas.forEach((posicoes, nivelY) => {
+        if (nivelY > maiorCamadaY) {
+            estado.camadas.delete(nivelY);
+        }
+    });
+}
+
+export const celulasCamadaYMaxima = 99;
+
+export function celulasLimiteCamadaY(camadaAtiva) {
+    const maiorCamadaY = Math.max(celulasMaiorCamadaY(), 1);
+    const camadaYMaxima = Math.max(maiorCamadaY + 1, camadaAtiva);
+
+    return Math.min(camadaYMaxima, celulasCamadaYMaxima);
+}
