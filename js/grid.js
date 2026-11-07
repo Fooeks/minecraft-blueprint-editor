@@ -165,6 +165,39 @@ function limparDesenho() {
     contexto.clearRect(0, 0, gridDesenho.width, gridDesenho.height);
 }
 
+const destaqueContorno = 1.5;
+const destaqueContornoCor = "rgba(90, 70, 40, 0.50)";
+const destaqueDegradeCentro = "rgba(247, 240, 223, 0)";
+const destaqueDegradeBorda = "rgba(247, 240, 223, 0.7)";
+
+function destacarCelula() {
+    if (estado.projetoAberto === null || estado.celulaDestacada === null) {
+        return;
+    }
+
+    const tamanho = estado.camera.pixelsPorCelula;
+    const x = celulaXParaPixel(estado.celulaDestacada.celulaX);
+    const z = celulaZParaPixel(estado.celulaDestacada.celulaZ);
+    const centroX = x + tamanho / 2;
+    const centroZ = z + tamanho / 2;
+
+    const degrade = contexto.createRadialGradient(centroX, centroZ, 0, centroX, centroZ, tamanho * Math.SQRT1_2);
+    degrade.addColorStop(0, destaqueDegradeCentro);
+    degrade.addColorStop(1, destaqueDegradeBorda);
+
+    contexto.fillStyle = degrade;
+    contexto.fillRect(x, z, tamanho, tamanho);
+
+    contexto.strokeStyle = destaqueContornoCor;
+    contexto.lineWidth = destaqueContorno;
+    contexto.strokeRect(
+        x + destaqueContorno / 2,
+        z + destaqueContorno / 2,
+        tamanho - destaqueContorno,
+        tamanho - destaqueContorno
+    );
+}
+
 function redesenhar() {
     redesenhoPendente = false;
     aplicarLimiteDeTamanho();
@@ -172,6 +205,7 @@ function redesenhar() {
     limparDesenho();
     desenharCelulas();
     criarGrid();
+    destacarCelula();
 }
 
 export function pedirRedesenho() {
@@ -199,6 +233,7 @@ function reiniciarCamera() {
 export function exibirProjeto(projeto) {
     estado.projetoAberto = projeto;
     celulasDescartar();
+    estado.celulaDestacada = null;
     reiniciarCamadaY();
     reiniciarCamera();
     gridMensagemVazio.hidden = true;
@@ -210,6 +245,7 @@ export function exibirProjeto(projeto) {
 export function limparProjeto() {
     estado.projetoAberto = null;
     celulasDescartar();
+    estado.celulaDestacada = null;
     reiniciarCamadaY();
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;

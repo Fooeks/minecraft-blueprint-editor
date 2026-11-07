@@ -7,5 +7,6 @@ export const estado = {
         pixelsPorCelula: 20
     },
     camadas: new Map(),
-    camadaAtiva: 1
+    camadaAtiva: 1,
+    celulaDestacada: null
 };
