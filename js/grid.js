@@ -46,7 +46,7 @@ function criarGrid() {
 
     const limites = calcularLimitesVisiveis();
 
-    contexto.strokeStyle = "#e40d0d";
+    contexto.strokeStyle = "rgba(90, 70, 40, 0.25)";
     contexto.lineWidth = 1;
 
     const topo = celulaZParaPixel(limites.primeiraCelulaZ);
@@ -93,8 +93,9 @@ function calcularTamanhoMinimoCelula(dimensaoX, dimensaoZ, celulaX, celulaZ) {
 
 export function restringirTamanhoCelula(tamanho) {
     const minimo = calcularTamanhoMinimoCelula(estado.projetoAberto.dimensaoX, estado.projetoAberto.dimensaoZ, gridDesenho.width, gridDesenho.height);
+    const minimoZoom = Math.max(minimo, 6);
 
-    return restringirValor(tamanho, minimo, 60);
+    return restringirValor(tamanho, minimoZoom, 60);
 }
 
 function aplicarLimiteDeTamanho() {
