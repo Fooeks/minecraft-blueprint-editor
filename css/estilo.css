@@ -128,3 +128,8 @@ body {
     grid-column: 3;
     grid-row: 1;
 }
+
+#abas button.marcado {
+    background: #5a4630;
+    color: #f7f0df;
+}

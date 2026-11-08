@@ -1,6 +1,7 @@
 import { estado } from "./estado.js";
 import { guardarUltimoProjeto } from "./armazenamento.js";
 import { celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
+import { abasSincronizar } from "./painel/abas.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -236,9 +237,11 @@ export function exibirProjeto(projeto) {
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     reiniciarCamera();
+    estado.abaAtiva = "cor";
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
     pedirRedesenho();
+    abasSincronizar();
     guardarUltimoProjeto(projeto.idProjeto);
 }
 
@@ -247,8 +250,10 @@ export function limparProjeto() {
     celulasDescartar();
     estado.celulaDestacada = null;
     reiniciarCamadaY();
+    estado.abaAtiva = null;
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;
+    abasSincronizar();
 }
 
 function ajustarTamanhoGrid() {

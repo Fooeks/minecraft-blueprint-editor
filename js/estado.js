@@ -8,5 +8,7 @@ export const estado = {
     },
     camadas: new Map(),
     camadaAtiva: 1,
-    celulaDestacada: null
+    celulaDestacada: null,
+    abaAtiva: null,
+    corAtiva: "#55ff55"
 };
