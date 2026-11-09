@@ -2,6 +2,7 @@ import { estado } from "./estado.js";
 
 const celulasMultiplicador = 1000;
 const celulasListaVazia = Object.freeze([]);
+export const celulasEventoMudou = "celulamudou";
 
 function celulasMontarChave(celulaX, celulaZ) {
     return celulaX * celulasMultiplicador + celulaZ;

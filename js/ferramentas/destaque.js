@@ -1,5 +1,5 @@
 import { estado } from "../estado.js";
-import { pedirRedesenho, pixelParaCelulaX, pixelParaCelulaZ } from "../grid.js";
+import { pedirRedesenho, pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula } from "../grid.js";
 
 const gridDesenho = document.getElementById("grid-desenho");
 
@@ -16,11 +16,6 @@ function destaqueSair() {
     pedirRedesenho();
 }
 
-function destaquePosicaoCelula(celulaX, celulaZ) {
-    return celulaX >= 0 && celulaX < estado.projetoAberto.dimensaoX
-        && celulaZ >= 0 && celulaZ < estado.projetoAberto.dimensaoZ;
-}
-
 function destaqueCompararCelula(celulaX, celulaZ) {
     return estado.celulaDestacada !== null
         && estado.celulaDestacada.celulaX === celulaX
@@ -35,7 +30,7 @@ function destaqueMover(evento) {
     const x = Math.floor(pixelParaCelulaX(evento.offsetX));
     const z = Math.floor(pixelParaCelulaZ(evento.offsetY));
 
-    if (estado.ferramenta === "mover" || !destaquePosicaoCelula(x, z)) {
+    if (estado.ferramenta === "mover" || !verificarPosicaoCelula(x, z)) {
         destaqueSair();
         return;
     }

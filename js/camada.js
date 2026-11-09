@@ -1,6 +1,6 @@
 import { estado } from "./estado.js";
 import { pedirRedesenho } from "./grid.js";
-import { celulasLimiteCamadaY, celulasApagarCamadasYVazias, celulasCamadaYMaxima } from "./celulas.js";
+import { celulasLimiteCamadaY, celulasApagarCamadasYVazias, celulasCamadaYMaxima, celulasEventoMudou } from "./celulas.js";
 
 const camadaYCampo = document.getElementById("campo-camada-y");
 const camadaYSlider = document.getElementById("slider-camada-y");
@@ -38,6 +38,8 @@ function camadaYIniciar() {
     camadaYSlider.addEventListener("change", function () {
         camadaYMudar(Number(camadaYSlider.value));
     });
+
+    document.addEventListener(celulasEventoMudou, camadaYSincronizar);
 
     camadaYSincronizar();
 }

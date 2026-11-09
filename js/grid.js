@@ -199,6 +199,11 @@ function destacarCelula() {
     );
 }
 
+export function verificarPosicaoCelula(celulaX, celulaZ) {
+    return celulaX >= 0 && celulaX < estado.projetoAberto.dimensaoX
+        && celulaZ >= 0 && celulaZ < estado.projetoAberto.dimensaoZ;
+}
+
 function redesenhar() {
     redesenhoPendente = false;
     aplicarLimiteDeTamanho();

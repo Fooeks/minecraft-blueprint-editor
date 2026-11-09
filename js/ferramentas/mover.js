@@ -14,6 +14,8 @@ function moverCampoDeTexto(alvo) {
 }
 
 function moverRestaurar() {
+    arrastando = false;
+
     if (ferramentaAnterior === null) {
         return;
     }
@@ -49,6 +51,13 @@ function moverTeclaSolta(evento) {
     moverRestaurar();
 }
 
+function moverArrasto(evento) {
+    arrastando = true;
+    ultimoX = evento.clientX;
+    ultimoZ = evento.clientY;
+    gridDesenho.setPointerCapture(evento.pointerId);
+}
+
 function moverComecar(evento) {
     if (estado.projetoAberto === null) {
         return;
@@ -58,14 +67,16 @@ function moverComecar(evento) {
         return;
     }
 
-    arrastando = true;
-    ultimoX = evento.clientX;
-    ultimoZ = evento.clientY;
-    gridDesenho.setPointerCapture(evento.pointerId);
+    moverArrasto(evento);
 }
 
 function moverMover(evento) {
     if (!arrastando) {
+        const botaoEsquerdo = (evento.buttons & 1) === 1;
+
+        if (estado.projetoAberto !== null && estado.ferramenta === "mover" && botaoEsquerdo) {
+            moverArrasto(evento);
+        }
         return;
     }
 
