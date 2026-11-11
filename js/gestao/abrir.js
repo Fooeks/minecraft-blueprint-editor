@@ -1,5 +1,6 @@
 import { montarListaProjetos } from "./lista.js";
 import { exibirProjeto } from "../grid.js";
+import { pendentesPerguntar } from "./pendentes.js";
 
 const abrirProjetoBotao = document.getElementById("btn-abrir");
 const abrirProjetoJanela = document.getElementById("abrir-projeto");
@@ -50,26 +51,29 @@ export function abrirProjetoIniciar(){
         const marcado = abrirProjetoLista.querySelector('input[name="abrir"]:checked');
         const idProjeto = marcado.value;
 
-        abrirProjetoAlerta.hidden = true;
-        abrirProjetoConfirmar.disabled = true;
+        pendentesPerguntar(async function() {
+        
+            abrirProjetoAlerta.hidden = true;
+            abrirProjetoConfirmar.disabled = true;
 
-        try {
-            const resposta = await fetch("api/abrirProjeto.php?id=" + encodeURIComponent(idProjeto));
+            try {
+                const resposta = await fetch("api/abrirProjeto.php?id=" + encodeURIComponent(idProjeto));
 
-            if (!resposta.ok) {
-                throw new Error("Falha ao abrir o projeto: " + resposta.status);
+                if (!resposta.ok) {
+                    throw new Error("Falha ao abrir o projeto: " + resposta.status);
+                }
+
+                const projeto = await resposta.json();
+                exibirProjeto(projeto);
+                abrirProjetoJanela.close();
+            } catch (erro) {
+                console.error(erro);
+                abrirProjetoAlerta.textContent = "Não foi possível abrir o projeto. Tente novamente.";
+                abrirProjetoAlerta.hidden = false;
+            } finally {
+                abrirProjetoConfirmar.disabled = false;
             }
-
-            const projeto = await resposta.json();
-            exibirProjeto(projeto);
-            abrirProjetoJanela.close();
-        } catch (erro) {
-            console.error(erro);
-            abrirProjetoAlerta.textContent = "Não foi possível abrir o projeto. Tente novamente.";
-            abrirProjetoAlerta.hidden = false;
-        } finally {
-            abrirProjetoConfirmar.disabled = false;
-        }
+        });
     });
 
     abrirProjetoCancelar.addEventListener("click", function () {

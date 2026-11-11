@@ -125,6 +125,18 @@
         <button type="button" id="btn-excluir-confirmacao-cancelar">Cancelar</button>
     </dialog>
 
+    <dialog id="pendentes-alteracoes" closedby="any">
+        <h2>Alterações não salvas</h2>
+
+        <p>Este projeto tem alterações não salvas. O que deseja fazer?</p>
+        
+        <p id="pendentes-alerta" role="alert" hidden></p>
+
+        <button type="button" id="btn-pendentes-salvar">Salvar e continuar</button>
+        <button type="button" id="btn-pendentes-continuar">Continuar sem salvar</button>
+        <button type="button" id="btn-pendentes-cancelar">Cancelar</button>
+    </dialog>
+
      <script type="module" src="js/editor.js"></script>
 
 </body>

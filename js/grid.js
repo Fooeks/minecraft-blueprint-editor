@@ -246,6 +246,7 @@ export function exibirProjeto(projeto) {
     reiniciarCamadaY();
     reiniciarCamera();
     estado.abaAtiva = "cor";
+    estado.alteracoesPendentes = false;
     gridMensagemVazio.hidden = true;
     gridDesenho.hidden = false;
     pedirRedesenho();
@@ -259,6 +260,7 @@ export function limparProjeto() {
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     estado.abaAtiva = null;
+    estado.alteracoesPendentes = false;
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;
     abasSincronizar();

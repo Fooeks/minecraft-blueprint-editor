@@ -1,4 +1,5 @@
 import { exibirProjeto } from "../grid.js";
+import { pendentesPerguntar } from "./pendentes.js";
 
 const novoProjetoBotao = document.getElementById("btn-novo");
 const novoProjetoJanela = document.getElementById("criar-projeto");
@@ -39,34 +40,38 @@ export function novoProjetoIniciar(){
             novoProjetoAlerta.hidden = false;
             return;
         }
+    
 
-        novoProjetoAlerta.hidden = true;
-        novoProjetoConfirmar.disabled = true;
+        pendentesPerguntar(async function() { 
+            
+            novoProjetoAlerta.hidden = true;
+            novoProjetoConfirmar.disabled = true;
 
-        try {
-            const resposta = await fetch("api/criarProjeto.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nome: novoProjetoNome.value,
-                    dimensaoX: dimensaoX,
-                    dimensaoZ: dimensaoZ
-                })
-            });
+            try {
+                const resposta = await fetch("api/criarProjeto.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nome: novoProjetoNome.value,
+                        dimensaoX: dimensaoX,
+                        dimensaoZ: dimensaoZ
+                    })
+                });
 
-            if (!resposta.ok) {
-                throw new Error("Falha na criação do projeto: " + resposta.status);
+                if (!resposta.ok) {
+                    throw new Error("Falha na criação do projeto: " + resposta.status);
+                }
+
+                const projeto = await resposta.json();
+                exibirProjeto(projeto);
+                novoProjetoJanela.close();
+            } catch (erro) {
+                console.error(erro);
+                novoProjetoAlerta.textContent = "Não foi possível criar o projeto. Tente novamente.";
+                novoProjetoAlerta.hidden = false;
+            } finally {
+                novoProjetoConfirmar.disabled = false;
             }
-
-            const projeto = await resposta.json();
-            exibirProjeto(projeto);
-            novoProjetoJanela.close();
-        } catch (erro) {
-            console.error(erro);
-            novoProjetoAlerta.textContent = "Não foi possível criar o projeto. Tente novamente.";
-            novoProjetoAlerta.hidden = false;
-        } finally {
-            novoProjetoConfirmar.disabled = false;
-        }
+        });
     });
 }

@@ -10,5 +10,7 @@ export const estado = {
     camadaAtiva: 1,
     celulaDestacada: null,
     abaAtiva: null,
-    corAtiva: "#55ff55"
+    corAtiva: "#55ff55",
+    alteracoesPendentes: false,
+    versaoAlteracoes: 0
 };
