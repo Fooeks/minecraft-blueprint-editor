@@ -153,3 +153,60 @@ export function celulasLimiteCamadaY(camadaAtiva) {
 
     return Math.min(camadaYMaxima, celulasCamadaYMaxima);
 }
+
+export function celulasCarregar(camadasY) {
+    for (const camadaY of camadasY) {
+        for (const grupoCor of camadaY.cores) {
+            const celula = Object.freeze({
+                cor: grupoCor.cor,
+                idForma: null,
+                idGrupo: null,
+                ordem: 0
+            });
+            const lista = Object.freeze([celula]);
+            const alteracoes = [];
+
+            for (const posicao of grupoCor.posicoes) {
+                alteracoes.push({
+                    celulaX: celulasChaveX(posicao),
+                    celulaZ: celulasChaveZ(posicao),
+                    depois: lista
+                });
+            }
+
+            celulasAlterar(camadaY.nivelY, alteracoes);
+        }
+    }
+}
+
+export function celulasCompactar() {
+    const camadasY = [];
+
+    for (const [nivelY, posicoes] of estado.camadas) {
+        if (posicoes.size === 0) {
+            continue;
+        }
+
+        const porCor = new Map();
+
+        for (const [chave, lista] of posicoes) {
+            const cor = lista[0].cor;
+
+            if (!porCor.has(cor)) {
+                porCor.set(cor, []);
+            }
+
+            porCor.get(cor).push(chave);
+        }
+
+        const cores = [];
+
+        for (const [cor, chavesDaCor] of porCor) {
+            cores.push({ cor: cor, posicoes: chavesDaCor });
+        }
+
+        camadasY.push({ nivelY: nivelY, cores: cores });
+    }
+
+    return camadasY;
+}

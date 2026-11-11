@@ -40,6 +40,8 @@ try {
         exit;
     }
 
+    $projeto['camadas'] = buscarCamadasY($pdo, $idProjeto);
+
     echo json_encode($projeto);
 } catch (PDOException $e) {
     error_log('Falha ao abrir projeto: ' . $e->getMessage());

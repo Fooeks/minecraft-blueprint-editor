@@ -1,6 +1,6 @@
 import { estado } from "./estado.js";
 import { guardarUltimoProjeto } from "./armazenamento.js";
-import { celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
+import { celulasCarregar, celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
 import { abasSincronizar } from "./painel/abas.js";
 
 const gridGrid = document.getElementById("grid");
@@ -237,8 +237,11 @@ function reiniciarCamera() {
 
 
 export function exibirProjeto(projeto) {
-    estado.projetoAberto = projeto;
+    const { camadas, ...dadosProjeto} = projeto;
+
+    estado.projetoAberto = dadosProjeto;
     celulasDescartar();
+    celulasCarregar(camadas ?? []);
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     reiniciarCamera();
