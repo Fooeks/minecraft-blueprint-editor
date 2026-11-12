@@ -2,6 +2,7 @@ import { estado } from "./estado.js";
 import { guardarUltimoProjeto } from "./armazenamento.js";
 import { celulasCarregar, celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
 import { abasSincronizar } from "./painel/abas.js";
+import { historicoZerar } from "./historico.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -241,6 +242,7 @@ export function exibirProjeto(projeto) {
 
     estado.projetoAberto = dadosProjeto;
     celulasDescartar();
+    historicoZerar();
     celulasCarregar(camadas ?? []);
     estado.celulaDestacada = null;
     reiniciarCamadaY();
@@ -257,6 +259,7 @@ export function exibirProjeto(projeto) {
 export function limparProjeto() {
     estado.projetoAberto = null;
     celulasDescartar();
+    historicoZerar();
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     estado.abaAtiva = null;

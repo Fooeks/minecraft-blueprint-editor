@@ -12,5 +12,10 @@ export const estado = {
     abaAtiva: null,
     corAtiva: "#55ff55",
     alteracoesPendentes: false,
-    versaoAlteracoes: 0
+    versaoAlteracoes: 0,
+    historico: {
+        desfazer: [],
+        refazer: [],
+        acaoAberta: null
+    }
 };

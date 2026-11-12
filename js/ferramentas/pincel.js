@@ -1,6 +1,7 @@
 import { estado } from "../estado.js";
 import { pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula, pedirRedesenho } from "../grid.js";
 import { celulasAlterar, celulasEventoMudou } from "../celulas.js";
+import { historicoIniciarAcao, historicoRegistrar, historicoFecharAcao } from "../historico.js";
 
 const gridDesenho = document.getElementById("grid-desenho");
 
@@ -23,6 +24,7 @@ function pincelPintar(evento) {
         return;
     }
 
+    historicoRegistrar(mudanca);
     pedirRedesenho();
     document.dispatchEvent(new Event(celulasEventoMudou));
 }
@@ -37,6 +39,7 @@ function pincelComecar(evento) {
     }
 
     pintando = true;
+    historicoIniciarAcao();
     gridDesenho.setPointerCapture(evento.pointerId);
     pincelPintar(evento);
 }
@@ -54,7 +57,12 @@ function pincelMover(evento) {
 }
 
 function pincelTerminar() {
+    if (!pintando) {
+        return;
+    }
+
     pintando = false;
+    historicoFecharAcao();
 }
 
 export function pincelIniciar() {

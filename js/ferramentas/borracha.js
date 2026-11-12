@@ -1,6 +1,7 @@
 import { estado } from "../estado.js";
 import { pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula, pedirRedesenho } from "../grid.js";
 import { celulasAlterar, celulasEventoMudou } from "../celulas.js";
+import { historicoIniciarAcao, historicoRegistrar, historicoFecharAcao } from "../historico.js";
 
 const gridDesenho = document.getElementById("grid-desenho");
 
@@ -22,6 +23,7 @@ function borrachaApagar(evento) {
         return;
     }
 
+    historicoRegistrar(mudanca);
     pedirRedesenho();
     document.dispatchEvent(new Event(celulasEventoMudou));
 }
@@ -36,6 +38,7 @@ function borrachaComecar(evento) {
     }
 
     apagando = true;
+    historicoIniciarAcao();
     gridDesenho.setPointerCapture(evento.pointerId);
     borrachaApagar(evento);
 }
@@ -53,7 +56,12 @@ function borrachaMover(evento) {
 }
 
 function borrachaTerminar() {
+    if (!apagando) {
+        return;
+    }
+
     apagando = false;
+    historicoFecharAcao();
 }
 
 export function borrachaIniciar() {

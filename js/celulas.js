@@ -23,7 +23,7 @@ function celulasIguais(celulaA, celulaB) {
         && celulaA.ordem === celulaB.ordem;
 }
 
-function celulasListasIguais(listaA, listaB) {
+export function celulasListasIguais(listaA, listaB) {
     if (listaA.length !== listaB.length) {
         return false;
     }
