@@ -5,33 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Blueprint Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="css/estilo.css">
 </head>
 
 <body>
 
     <header id="gestao-projetos">
-        <button id="btn-novo" type="button">Novo</button>
-        <button id="btn-abrir" type="button">Abrir</button>
-        <button id="btn-salvar" type="button">Salvar</button>
-        <button id="btn-excluir" type="button">Excluir</button>
-        <button id="btn-importar" type="button">Importar</button>
-        <button id="btn-exportar" type="button">Exportar</button>
+        <button id="btn-novo" type="button"><img src="img/icones/novo.svg" alt="">Novo</button>
+        <button id="btn-abrir" type="button"><img src="img/icones/abrir.svg" alt="">Abrir</button>
+        <button id="btn-salvar" type="button"><img src="img/icones/salvar.svg" alt="">Salvar</button>
+        <button id="btn-excluir" type="button"><img src="img/icones/excluir.svg" alt="">Excluir</button>
+        <button id="btn-importar" type="button"><img src="img/icones/importar.svg" alt="">Importar</button>
+        <button id="btn-exportar" type="button"><img src="img/icones/exportar.svg" alt="">Exportar</button>
         <p id="salvar-status" role="status" hidden></p>
     </header>
 
     <nav id="barra-ferramentas">
-        <button id="ferr-desfazer" type="button" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">Desfazer</button>
-        <button id="ferr-refazer" type="button" title="Refazer (Ctrl+Y)" aria-label="Refazer">Refazer</button>
-        <button id="ferr-zoom-in" type="button" title="Zoom in (Scroll)" aria-label="Zoom in">Zoom in</button>
-        <button id="ferr-zoom-out" type="button" title="Zoom out (Scroll)" aria-label="Zoom out">Zoom out</button>
-        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção">Seleção</button>
-        <button id="ferr-mover" type="button" title="Mover (Barra de espaço)" aria-label="Mover">Mover</button>
-        <button id="ferr-pincel" type="button" title="Pincel" aria-label="Pincel">Pincel</button>
-        <button id="ferr-balde" type="button" title="Balde" aria-label="Balde">Balde</button>
-        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas">Formas</button>
-        <button id="ferr-borracha" type="button" title="Borracha (E)" aria-label="Borracha">Borracha</button>
-        <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua">Régua</button>
+        <button id="ferr-desfazer" type="button" title="Desfazer (Ctrl+Z)" aria-label="Desfazer"><img src="img/icones/desfazer.svg" alt=""></button>
+        <button id="ferr-refazer" type="button" title="Refazer (Ctrl+Y)" aria-label="Refazer"><img src="img/icones/refazer.svg" alt=""></button>
+        <button id="ferr-zoom-in" type="button" title="Zoom in (Scroll)" aria-label="Zoom in"><img src="img/icones/zoom-in.svg" alt=""></button>
+        <button id="ferr-zoom-out" type="button" title="Zoom out (Scroll)" aria-label="Zoom out"><img src="img/icones/zoom-out.svg" alt=""></button>
+        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção"><img src="img/icones/selecao.svg" alt=""></button>
+        <button id="ferr-mover" type="button" title="Mover (Barra de espaço)" aria-label="Mover"><img src="img/icones/mover.svg" alt=""></button>
+        <button id="ferr-pincel" type="button" title="Pincel" aria-label="Pincel"><img src="img/icones/pincel.svg" alt=""></button>
+        <button id="ferr-balde" type="button" title="Balde" aria-label="Balde"><img src="img/icones/balde.svg" alt=""></button>
+        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas"><img src="img/icones/formas.svg" alt=""></button>
+        <button id="ferr-borracha" type="button" title="Borracha (E)" aria-label="Borracha"><img src="img/icones/borracha.svg" alt=""></button>
+        <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua"><img src="img/icones/regua.svg" alt=""></button>
     </nav>
 
     <div id="editor">
@@ -81,8 +84,10 @@
         <input id="campo-dimensao-z" type="number" min="1" max="500" value="100">
 
         <p id="criar-alerta" role="alert" hidden></p>
-        <button id="btn-criar-confirmar" type="button">Criar</button>
-        <button id="btn-criar-cancelar" type="button">Cancelar</button>
+        <div class="botoes-janela">
+            <button id="btn-criar-confirmar" type="button" class="botao-principal">Criar</button>
+            <button id="btn-criar-cancelar" type="button">Cancelar</button>
+        </div>
     </dialog>
 
     <dialog id="abrir-projeto" closedby="any">
@@ -95,8 +100,10 @@
         <p id="abrir-vazio" hidden>Nenhum projeto encontrado.</p>
         <p id="abrir-alerta" role="alert" hidden></p>
 
-        <button type="button" id="btn-abrir-confirmar">Abrir</button>
-        <button type="button" id="btn-abrir-cancelar">Cancelar</button>
+        <div class="botoes-janela">
+            <button type="button" id="btn-abrir-confirmar" class="botao-principal">Abrir</button>
+            <button type="button" id="btn-abrir-cancelar">Cancelar</button>
+        </div>
     </dialog>
 
     <dialog id="excluir-projeto" closedby="any">
@@ -109,8 +116,10 @@
         <p id="excluir-vazio" hidden>Nenhum projeto encontrado.</p>
         <p id="excluir-alerta" role="alert" hidden></p>
 
-        <button type="button" id="btn-excluir-confirmar">Excluir</button>
-        <button type="button" id="btn-excluir-cancelar">Cancelar</button>
+        <div class="botoes-janela">
+            <button type="button" id="btn-excluir-confirmar" class="botao-principal">Excluir</button>
+            <button type="button" id="btn-excluir-cancelar">Cancelar</button>
+        </div>
     </dialog>
 
     <dialog id="excluir-projeto-confirmacao" closedby="any">
@@ -121,8 +130,10 @@
 
         <p id="excluir-confirmacao-alerta" role="alert" hidden></p>
 
-        <button type="button" id="btn-excluir-confirmacao-confirmar">Confirmar</button>
-        <button type="button" id="btn-excluir-confirmacao-cancelar">Cancelar</button>
+        <div class="botoes-janela">
+            <button type="button" id="btn-excluir-confirmacao-confirmar" class="botao-principal">Confirmar</button>
+            <button type="button" id="btn-excluir-confirmacao-cancelar">Cancelar</button>
+        </div>
     </dialog>
 
     <dialog id="pendentes-alteracoes" closedby="any">
@@ -132,9 +143,11 @@
         
         <p id="pendentes-alerta" role="alert" hidden></p>
 
-        <button type="button" id="btn-pendentes-salvar">Salvar e continuar</button>
-        <button type="button" id="btn-pendentes-continuar">Continuar sem salvar</button>
-        <button type="button" id="btn-pendentes-cancelar">Cancelar</button>
+        <div class="botoes-janela">
+            <button type="button" id="btn-pendentes-salvar" class="botao-principal">Salvar e continuar</button>
+            <button type="button" id="btn-pendentes-continuar">Continuar sem salvar</button>
+            <button type="button" id="btn-pendentes-cancelar">Cancelar</button>
+        </div>
     </dialog>
 
      <script type="module" src="js/editor.js"></script>

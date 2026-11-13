@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-square preview-icon">
+  <defs>
+    <mask id="square-circle-gap" maskUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="white"/>
+      <circle cx="9" cy="9" r="8" fill="none" stroke="black" stroke-width="4"/>
+    </mask>
+  </defs>
+  <rect width="16" height="16" x="6" y="6" mask="url(#square-circle-gap)"/>
+  <circle cx="9" cy="9" r="8"/>
+</svg>
