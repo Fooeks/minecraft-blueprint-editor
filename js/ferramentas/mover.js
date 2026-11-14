@@ -1,6 +1,6 @@
 import { estado } from "../estado.js";
 import { pedirRedesenho } from "../grid.js";
-import { selecionarFerramenta } from "./ativa.js";
+import { selecionarFerramenta, campoDeTexto, janelaAberta } from "./ativa.js";
 
 const gridDesenho = document.getElementById("grid-desenho");
 
@@ -8,10 +8,6 @@ let arrastando = false;
 let ultimoX = 0;
 let ultimoZ = 0;
 let ferramentaAnterior = null;
-
-function moverCampoDeTexto(alvo) {
-    return alvo.closest("input, textarea") !== null;
-}
 
 function moverRestaurar() {
     arrastando = false;
@@ -29,7 +25,7 @@ function moverTeclaApertada(evento) {
         return;
     }
 
-    if (evento.key !== " " || moverCampoDeTexto(evento.target)) {
+    if (evento.key !== " " || campoDeTexto(evento.target) || janelaAberta()) {
         return;
     }
 

@@ -226,6 +226,79 @@ button, input {
     padding: 12px;
 }
 
+#campo-cor {
+    appearance: none;
+    box-sizing: border-box;
+    display: block;
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    border: 1px solid var(--cor-divisor);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+#campo-cor::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 50%;
+}
+
+#campo-cor::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+#campo-cor::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+#campo-cor:focus-visible {
+    outline: 2px solid var(--cor-ativo-fundo);
+    outline-offset: 2px;
+}
+
+#paleta, #recentes {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+}
+
+#recentes[hidden] {
+    display: none;
+}
+
+#rotulo-recentes {
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
+.amostra-cor {
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid var(--cor-divisor);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.amostra-cor:hover {
+    outline: 2px solid var(--cor-divisor);
+    outline-offset: 2px;
+}
+
+.amostra-cor:focus-visible {
+    outline: 2px solid var(--cor-ativo-fundo);
+    outline-offset: 2px;
+}
+
+.amostra-cor.marcado {
+    outline: 2px solid var(--cor-ativo-fundo);
+    outline-offset: 2px;
+}
+
 #abas button.marcado {
     background: var(--cor-ativo-fundo);
     color: var(--cor-ativo-texto);

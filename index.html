@@ -18,8 +18,8 @@
         <button id="btn-abrir" type="button"><img src="img/icones/abrir.svg" alt="">Abrir</button>
         <button id="btn-salvar" type="button"><img src="img/icones/salvar.svg" alt="">Salvar</button>
         <button id="btn-excluir" type="button"><img src="img/icones/excluir.svg" alt="">Excluir</button>
-        <button id="btn-importar" type="button"><img src="img/icones/importar.svg" alt="">Importar</button>
-        <button id="btn-exportar" type="button"><img src="img/icones/exportar.svg" alt="">Exportar</button>
+        <button id="btn-importar" type="button" disabled><img src="img/icones/importar.svg" alt="">Importar</button>
+        <button id="btn-exportar" type="button" disabled><img src="img/icones/exportar.svg" alt="">Exportar</button>
     </header>
 
     <nav id="barra-ferramentas">
@@ -27,13 +27,13 @@
         <button id="ferr-refazer" type="button" title="Refazer (Ctrl+Y)" aria-label="Refazer"><img src="img/icones/refazer.svg" alt=""></button>
         <button id="ferr-zoom-in" type="button" title="Zoom in (Scroll)" aria-label="Zoom in"><img src="img/icones/zoom-in.svg" alt=""></button>
         <button id="ferr-zoom-out" type="button" title="Zoom out (Scroll)" aria-label="Zoom out"><img src="img/icones/zoom-out.svg" alt=""></button>
-        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção"><img src="img/icones/selecao.svg" alt=""></button>
+        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção" disabled><img src="img/icones/selecao.svg" alt=""></button>
         <button id="ferr-mover" type="button" title="Mover (Barra de espaço)" aria-label="Mover"><img src="img/icones/mover.svg" alt=""></button>
-        <button id="ferr-pincel" type="button" title="Pincel" aria-label="Pincel"><img src="img/icones/pincel.svg" alt=""></button>
-        <button id="ferr-balde" type="button" title="Balde" aria-label="Balde"><img src="img/icones/balde.svg" alt=""></button>
-        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas"><img src="img/icones/formas.svg" alt=""></button>
+        <button id="ferr-pincel" type="button" title="Pincel (P)" aria-label="Pincel"><img src="img/icones/pincel.svg" alt=""></button>
+        <button id="ferr-balde" type="button" title="Balde (B)" aria-label="Balde" disabled><img src="img/icones/balde.svg" alt=""></button>
+        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas" disabled><img src="img/icones/formas.svg" alt=""></button>
         <button id="ferr-borracha" type="button" title="Borracha (E)" aria-label="Borracha"><img src="img/icones/borracha.svg" alt=""></button>
-        <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua"><img src="img/icones/regua.svg" alt=""></button>
+        <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua" disabled><img src="img/icones/regua.svg" alt=""></button>
     </nav>
 
     <div id="editor">
@@ -60,6 +60,9 @@
 
             <section id="conteudo-cor">
                 <input id="campo-cor" type="color" aria-label="Cor ativa">
+                <div id="paleta"></div>
+                <p id="rotulo-recentes" hidden>Recentes</p>
+                <div id="recentes" hidden></div>
             </section>
             <section id="conteudo-propriedades">
                 <p>Conteúdo da aba Propriedades</p>

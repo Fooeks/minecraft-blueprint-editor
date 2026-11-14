@@ -1,6 +1,6 @@
 export const estado = {
     projetoAberto: null,
-    ferramenta: "selecao",
+    ferramenta: "pincel",
     camera: {
         deslocamentoX: 0,
         deslocamentoZ: 0,
@@ -10,7 +10,8 @@ export const estado = {
     camadaAtiva: 1,
     celulaDestacada: null,
     abaAtiva: null,
-    corAtiva: "#55ff55",
+    corAtiva: "#00aa00",
+    coresRecentes:[],
     alteracoesPendentes: false,
     versaoAlteracoes: 0,
     historico: {

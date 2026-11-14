@@ -3,6 +3,7 @@ import { pedirRedesenho } from "../grid.js";
 import { camadaYMudar } from "../camada.js";
 import { celulasEventoMudou } from "../celulas.js";
 import { historicoAoMudar, historicoDesfazer, historicoRefazer } from "../historico.js";
+import { campoDeTexto, janelaAberta } from "./ativa.js";
 
 const desfazerBotao = document.getElementById("ferr-desfazer");
 const refazerBotao = document.getElementById("ferr-refazer");
@@ -30,16 +31,12 @@ function desfazerAplicar(funcaoHistorico) {
     document.dispatchEvent(new Event(celulasEventoMudou));
 }
 
-function desfazerCampoDeTexto(alvo) {
-    return alvo.closest("input, textarea") !== null;
-}
-
 function desfazerTeclaApertada(evento) {
     if (estado.projetoAberto === null) {
         return;
     }
 
-    if (!evento.ctrlKey || evento.shiftKey || desfazerCampoDeTexto(evento.target)) {
+    if (!evento.ctrlKey || evento.shiftKey || campoDeTexto(evento.target) || janelaAberta()) {
         return;
     }
 
@@ -61,7 +58,7 @@ function desfazerTeclaApertada(evento) {
 export function desfazerIniciar() {
     desfazerBotao.addEventListener("click", () => desfazerAplicar(historicoDesfazer));
     refazerBotao.addEventListener("click", () => desfazerAplicar(historicoRefazer));
-     document.addEventListener("keydown", desfazerTeclaApertada);
+    document.addEventListener("keydown", desfazerTeclaApertada);
     historicoAoMudar(desfazerSincronizar);
     desfazerSincronizar();
 }
