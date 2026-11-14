@@ -2,12 +2,17 @@ import { estado } from "../estado.js";
 import { exibirProjeto } from "../grid.js";
 import { lerUltimoProjeto, apagarUltimoProjeto } from "../armazenamento.js";
 
+const reabrirProjetoMensagem = document.getElementById("mensagem-vazio");
+
 export async function reabrirProjetoIniciar() {
     const idProjeto = lerUltimoProjeto();
 
     if (idProjeto === null) {
         return;
     }
+
+    const reabrirProjetoTextoOriginal = reabrirProjetoMensagem.textContent;
+    reabrirProjetoMensagem.textContent = "Carregando projeto...";
 
     try {
         const resposta = await fetch("api/abrirProjeto.php?id=" + encodeURIComponent(idProjeto));
@@ -28,5 +33,7 @@ export async function reabrirProjetoIniciar() {
         exibirProjeto(projeto);
     } catch (erro) {
         console.error(erro);
+    } finally {
+        reabrirProjetoMensagem.textContent = reabrirProjetoTextoOriginal;
     }
 }

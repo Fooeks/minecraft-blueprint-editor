@@ -2,6 +2,7 @@ import { montarListaProjetos } from "./lista.js";
 import { estado } from "../estado.js";
 import { limparProjeto } from "../grid.js";
 import { apagarUltimoProjeto } from "../armazenamento.js";
+import { notificacaoMostrar } from "../notificacao.js";
 
 const excluirProjetoBotao = document.getElementById("btn-excluir");
 const excluirProjetoJanela = document.getElementById("excluir-projeto");
@@ -15,6 +16,8 @@ const excluirProjetoConfirmacaoNome = document.getElementById("excluir-confirmac
 const excluirProjetoConfirmacaoAlerta = document.getElementById("excluir-confirmacao-alerta");
 const excluirProjetoConfirmacaoConfirmar = document.getElementById("btn-excluir-confirmacao-confirmar");
 const excluirProjetoConfirmacaoCancelar = document.getElementById("btn-excluir-confirmacao-cancelar");
+
+const excluirProjetoTempoAviso = 3000;
 
 export function excluirProjetoIniciar() {
 
@@ -97,6 +100,7 @@ export function excluirProjetoIniciar() {
 
             excluirProjetoConfirmacaoJanela.close();
             excluirProjetoJanela.close();
+            notificacaoMostrar("Projeto excluído.", "normal", excluirProjetoTempoAviso);
         } catch (erro) {
             console.error(erro);
             excluirProjetoConfirmacaoAlerta.textContent = "Não foi possível excluir o projeto. Tente novamente.";

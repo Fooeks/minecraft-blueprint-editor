@@ -29,6 +29,7 @@ export function camadaYMudar(nivelY) {
 function camadaYIniciar() {
     camadaYCampo.addEventListener("change", function () {
         camadaYMudar(Number(camadaYCampo.value));
+        camadaYCampo.blur();
     });
 
     camadaYSlider.addEventListener("input", function () {

@@ -14,6 +14,16 @@ function medidaDimensaoValida(valor) {
     return Number.isInteger(valor) && valor >= 1 && valor <= 500;
 }
 
+function novoProjetoMarcarInvalido(campo) {
+    campo.classList.add("campo-invalido");
+    campo.setAttribute("aria-invalid", "true");
+}
+
+function novoProjetoDesmarcarInvalido(campo) {
+    campo.classList.remove("campo-invalido");
+    campo.removeAttribute("aria-invalid");
+}
+
 export function novoProjetoIniciar(){
 
     novoProjetoBotao.addEventListener("click", function () {
@@ -29,15 +39,31 @@ export function novoProjetoIniciar(){
         novoProjetoDimensaoX.value = 100;
         novoProjetoDimensaoZ.value = 100;
         novoProjetoAlerta.hidden = true;
+        novoProjetoDesmarcarInvalido(novoProjetoDimensaoX);
+        novoProjetoDesmarcarInvalido(novoProjetoDimensaoZ);
     });
 
     novoProjetoConfirmar.addEventListener("click", async function () {
         const dimensaoX = Number(novoProjetoDimensaoX.value);
         const dimensaoZ = Number(novoProjetoDimensaoZ.value);
 
-        if (!medidaDimensaoValida(dimensaoX) || !medidaDimensaoValida(dimensaoZ)) {
+        const xValido = medidaDimensaoValida(dimensaoX);
+        const zValido = medidaDimensaoValida(dimensaoZ);
+
+        if (!xValido || !zValido) {
             novoProjetoAlerta.textContent = "Informe números inteiros entre 1 e 500.";
             novoProjetoAlerta.hidden = false;
+            if (!xValido) {
+                novoProjetoMarcarInvalido(novoProjetoDimensaoX);
+            }
+            if (!zValido) {
+                novoProjetoMarcarInvalido(novoProjetoDimensaoZ);
+            }
+            if (!xValido) {
+                novoProjetoDimensaoX.focus();
+            } else {
+                novoProjetoDimensaoZ.focus();
+            }
             return;
         }
     
@@ -73,5 +99,13 @@ export function novoProjetoIniciar(){
                 novoProjetoConfirmar.disabled = false;
             }
         });
+    });
+
+    novoProjetoDimensaoX.addEventListener("input", function() {
+        novoProjetoDesmarcarInvalido(novoProjetoDimensaoX);
+    });
+
+    novoProjetoDimensaoZ.addEventListener("input", function() { 
+        novoProjetoDesmarcarInvalido(novoProjetoDimensaoZ);
     });
 }

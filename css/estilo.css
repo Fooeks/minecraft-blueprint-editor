@@ -12,6 +12,7 @@
     --cor-hover-gestao: #bfae86;
     --cor-hover-barra: #d6cab2;
     --opacidade-desabilitado: 0.5;
+    --cor-erro: #a63d2f;
 }
 
 html, body {
@@ -282,6 +283,10 @@ dialog h2 {
     color: inherit;
 }
 
+#criar-projeto input.campo-invalido {
+    border-color: var(--cor-erro);
+}
+
 #criar-projeto label {
     display: block;
     margin-bottom: 4px;
@@ -296,6 +301,7 @@ dialog h2 {
 dialog p[role="alert"] {
     margin: 12px 0 0;
     font-weight: 600;
+    color: var(--cor-erro);
 }
 
 #abrir-lista, #excluir-lista {
@@ -342,4 +348,25 @@ dialog p[role="alert"] {
     flex-shrink: 0;
     font-size: 0.875rem;
     white-space: nowrap;
+}
+
+#notificacao {
+    inset: auto;
+    margin: 0;
+    position: fixed;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background-color: var(--cor-ativo-fundo);
+    color: var(--cor-ativo-texto);
+    box-shadow: 0 1px 3px var(--cor-sombra);
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+#notificacao.notificacao-erro {
+    background-color: var(--cor-erro);
+    color: var(--cor-grid);
 }

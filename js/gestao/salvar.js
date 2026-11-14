@@ -1,25 +1,13 @@
 import { estado } from "../estado.js";
 import { celulasCompactar } from "../celulas.js";
+import { notificacaoMostrar } from "../notificacao.js";
 
 const salvarProjetoBotao = document.getElementById("btn-salvar");
-const salvarProjetoStatus = document.getElementById("salvar-status");
 
 const salvarProjetoTempoSucesso = 3000;
 const salvarProjetoTempoErro = 8000;
 
-let salvarProjetoTemporizador = null;
 let salvarProjetoEmAndamento = false;
-
-function salvarProjetoMostrar(texto, duracao) {
-    clearTimeout(salvarProjetoTemporizador);
-
-    salvarProjetoStatus.textContent = texto;
-    salvarProjetoStatus.hidden = false;
-
-    salvarProjetoTemporizador = setTimeout(function () {
-        salvarProjetoStatus.hidden = true;
-    }, duracao);
-}
 
 function salvarProjetoContinuaAberto(idProjeto) {
     return estado.projetoAberto !== null && estado.projetoAberto.idProjeto === idProjeto;
@@ -33,8 +21,6 @@ export async function salvarProjeto() {
     const idProjeto = estado.projetoAberto.idProjeto;
     const versaoAtual = estado.versaoAlteracoes;
 
-    clearTimeout(salvarProjetoTemporizador);
-    salvarProjetoStatus.hidden = true;
     salvarProjetoBotao.disabled = true;
     salvarProjetoEmAndamento = true;
 
@@ -56,7 +42,7 @@ export async function salvarProjeto() {
                 estado.alteracoesPendentes = false;
             }
 
-            salvarProjetoMostrar("Projeto salvo.", salvarProjetoTempoSucesso);
+            notificacaoMostrar("Projeto salvo.", "normal", salvarProjetoTempoSucesso);
         }
 
         return true;
@@ -64,7 +50,7 @@ export async function salvarProjeto() {
         console.error(erro);
 
         if (salvarProjetoContinuaAberto(idProjeto)) {
-            salvarProjetoMostrar("Não foi possível salvar o projeto. Tente novamente.", salvarProjetoTempoErro);
+            notificacaoMostrar("Não foi possível salvar o projeto. Tente novamente.", "erro", salvarProjetoTempoErro);
         }
 
         return false;
@@ -81,7 +67,7 @@ export function salvarProjetoIniciar() {
         }
 
         if (!estado.alteracoesPendentes){
-            salvarProjetoMostrar("Sem alterações pendentes.", salvarProjetoTempoSucesso);
+            notificacaoMostrar("Sem alterações pendentes.", "normal", salvarProjetoTempoSucesso);
             return;
         }
         
