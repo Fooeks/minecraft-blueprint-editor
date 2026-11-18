@@ -56,6 +56,28 @@ export function historicoRegistrar(mudancas) {
     }
 }
 
+export function historicoRegistrarForma(idForma, nivelY, antes, depois) {
+    const acao = estado.historico.acaoAberta;
+
+    if (acao === null) {
+        return;
+    }
+
+    const chave = "forma:" + idForma;
+    const existente = acao.get(chave);
+
+    if (existente === undefined) {
+        acao.set(chave, { idForma, nivelY, antes, depois });
+    } else {
+        acao.set(chave, {
+            idForma: existente.idForma,
+            nivelY: existente.nivelY,
+            antes: existente.antes,
+            depois: depois
+        });
+    }
+}
+
 export function historicoFecharAcao() {
     const acao = estado.historico.acaoAberta;
 
@@ -68,8 +90,14 @@ export function historicoFecharAcao() {
     const entradas = [];
 
     for (const entrada of acao.values()) {
-        if (!celulasListasIguais(entrada.antes, entrada.depois)) {
-            entradas.push(entrada);
+        if (entrada.idForma !== undefined) {
+            if (entrada.antes !== entrada.depois) {
+                entradas.push(entrada);
+            }
+        } else {
+            if (!celulasListasIguais(entrada.antes, entrada.depois)) {
+                entradas.push(entrada);
+            }
         }
     }
 
@@ -86,6 +114,15 @@ function historicoAplicar(acao, campo) {
     const porCamada = new Map();
 
     for (const entrada of acao) {
+        if (entrada.idForma !== undefined) {
+            if (entrada[campo] === null) {
+                estado.formas.delete(entrada.idForma);
+            } else {
+                estado.formas.set(entrada.idForma, entrada[campo]);
+            }
+            continue;
+        }
+
         if (!porCamada.has(entrada.nivelY)) {
             porCamada.set(entrada.nivelY, []);
         }

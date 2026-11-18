@@ -12,6 +12,9 @@ export const estado = {
     abaAtiva: null,
     corAtiva: "#00aa00",
     coresRecentes:[],
+    formas: new Map(),
+    proximaIdForma: 1,
+    previaForma: null,
     alteracoesPendentes: false,
     versaoAlteracoes: 0,
     historico: {

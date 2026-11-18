@@ -1,7 +1,8 @@
 import { estado } from "../estado.js";
 import { pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula, pedirRedesenho } from "../grid.js";
-import { celulasAlterar, celulasEventoMudou } from "../celulas.js";
+import { celulasEventoMudou, celulasObter, celulasBloqueada } from "../celulas.js";
 import { historicoIniciarAcao, historicoRegistrar, historicoFecharAcao } from "../historico.js";
+import { formaAlterarCelulas } from "../forma.js";
 
 const gridDesenho = document.getElementById("grid-desenho");
 
@@ -15,9 +16,13 @@ function borrachaApagar(evento) {
         return;
     }
 
-    const mudanca = celulasAlterar(estado.camadaAtiva, [
-        { celulaX, celulaZ, depois: [] }
-    ]);
+    const lista = celulasObter(estado.camadaAtiva, celulaX, celulaZ);
+
+    if (lista.length > 0 && celulasBloqueada(lista[0])) {
+        return;
+    }
+
+    const mudanca = formaAlterarCelulas(estado.camadaAtiva, [{ celulaX, celulaZ, depois: [] }], "editar");
 
     if (mudanca.length === 0) {
         return;

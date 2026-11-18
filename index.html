@@ -27,11 +27,11 @@
         <button id="ferr-refazer" type="button" title="Refazer (Ctrl+Y)" aria-label="Refazer"><img src="img/icones/refazer.svg" alt=""></button>
         <button id="ferr-zoom-in" type="button" title="Zoom in (Scroll)" aria-label="Zoom in"><img src="img/icones/zoom-in.svg" alt=""></button>
         <button id="ferr-zoom-out" type="button" title="Zoom out (Scroll)" aria-label="Zoom out"><img src="img/icones/zoom-out.svg" alt=""></button>
-        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção" disabled><img src="img/icones/selecao.svg" alt=""></button>
+        <button id="ferr-selecao" type="button" title="Seleção (V)" aria-label="Seleção"><img src="img/icones/selecao.svg" alt=""></button>
         <button id="ferr-mover" type="button" title="Mover (Barra de espaço)" aria-label="Mover"><img src="img/icones/mover.svg" alt=""></button>
         <button id="ferr-pincel" type="button" title="Pincel (P)" aria-label="Pincel"><img src="img/icones/pincel.svg" alt=""></button>
         <button id="ferr-balde" type="button" title="Balde (B)" aria-label="Balde" disabled><img src="img/icones/balde.svg" alt=""></button>
-        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas" disabled><img src="img/icones/formas.svg" alt=""></button>
+        <button id="ferr-formas" type="button" title="Formas" aria-label="Formas"><img src="img/icones/formas.svg" alt=""></button>
         <button id="ferr-borracha" type="button" title="Borracha (E)" aria-label="Borracha"><img src="img/icones/borracha.svg" alt=""></button>
         <button id="ferr-regua" type="button" title="Régua (R)" aria-label="Régua" disabled><img src="img/icones/regua.svg" alt=""></button>
     </nav>
@@ -49,6 +49,12 @@
         <main id="grid">
             <canvas id="grid-desenho" hidden></canvas>
             <p id="mensagem-vazio" role="status">Selecione "Novo", "Abrir" ou "Importar" para começar um projeto.</p>
+
+            <div id="previa-forma" hidden>
+                <span>Arraste para posicionar a forma.</span>
+                <button id="btn-previa-confirmar" type="button">Inserir (Enter)</button>
+                <button id="btn-previa-cancelar" type="button">Cancelar (Esc)</button>
+            </div>
         </main>
 
         <aside id="painel-lateral">
@@ -65,10 +71,48 @@
                 <div id="recentes" hidden></div>
             </section>
             <section id="conteudo-propriedades">
-                <p>Conteúdo da aba Propriedades</p>
+                <div id="propriedades-forma" hidden>
+                    <div id="subabas-forma">
+                        <button id="subaba-poligono" type="button" class="marcado"><img src="img/icones/quadrado.svg" alt="">Polígono</button>
+                        <button id="subaba-superelipse" type="button"><img src="img/icones/circulo.svg" alt="">Superelipse</button>
+                    </div>
+
+                    <div id="subconteudo-poligono">
+                        <label for="campo-forma-lados">Lados</label>
+                        <input id="campo-forma-lados" type="number" min="3" max="32" value="4">
+                    </div>
+
+                    <div id="subconteudo-superelipse" hidden>
+                        <label for="campo-forma-expoente">Expoente</label>
+                        <input id="campo-forma-expoente" type="number" min="0.5" max="10" step="0.1" value="2">
+                    </div>
+
+                    <label for="campo-forma-dimensao-x">Dimensão X</label>
+                    <input id="campo-forma-dimensao-x" type="number" min="1">
+
+                    <label for="campo-forma-dimensao-z">Dimensão Z</label>
+                    <input id="campo-forma-dimensao-z" type="number" min="1">
+
+                    <fieldset>
+                        <legend>Estilo</legend>
+                        <label><input type="radio" name="forma-estilo" value="contorno" checked> Contorno</label>
+                        <label><input type="radio" name="forma-estilo" value="preenchida"> Preenchida</label>
+                    </fieldset>
+
+                    <label for="campo-forma-rotacao">Rotação (graus)</label>
+                    <input id="campo-forma-rotacao" type="number" step="1" value="0">
+
+                    <p id="forma-alerta" role="alert" hidden></p>
+
+                    <div id="forma-botoes" class="botoes-janela">
+                        <button id="btn-forma-confirmar" type="button" class="botao-principal">Inserir</button>
+                        <button id="btn-forma-cancelar" type="button">Cancelar</button>
+                    </div>
+                </div>
             </section>
             <section id="conteudo-lista">
-                <p>Conteúdo da aba Lista</p>
+                <p id="lista-vazio">Nenhuma forma criada</p>
+                <ul id="lista-formas" hidden></ul>
             </section>
         </aside>
     
@@ -150,6 +194,8 @@
             <button type="button" id="btn-pendentes-continuar">Continuar sem salvar</button>
             <button type="button" id="btn-pendentes-cancelar">Cancelar</button>
         </div>
+    </dialog>
+
     </dialog>
 
     <div id="notificacao" popover="manual" role="status"></div>

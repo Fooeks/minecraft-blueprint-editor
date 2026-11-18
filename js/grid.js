@@ -3,6 +3,7 @@ import { guardarUltimoProjeto } from "./armazenamento.js";
 import { celulasCarregar, celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
 import { abasSincronizar } from "./painel/abas.js";
 import { historicoZerar } from "./historico.js";
+import { listaSincronizar } from "./painel/lista.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -10,6 +11,8 @@ const gridDesenho = document.getElementById("grid-desenho");
 const contexto = gridDesenho.getContext("2d");
 const camadaYCampo = document.getElementById("campo-camada-y");
 const camadaYSlider = document.getElementById("slider-camada-y");
+const gridPrevia = document.getElementById("previa-forma");
+const gridPropriedadesForma = document.getElementById("propriedades-forma");
 
 let redesenhoPendente = false;
 
@@ -163,6 +166,34 @@ function desenharCelulas() {
     desenharCamadaY(estado.camadaAtiva, 1);
 }
 
+function desenharPreviaForma() {
+    if (estado.previaForma === null) {
+        return;
+    }
+
+    const limites = calcularLimitesVisiveis();
+    const tamanho = estado.camera.pixelsPorCelula;
+    const origemX = estado.previaForma.forma.posicaoX;
+    const origemZ = estado.previaForma.forma.posicaoZ;
+
+    contexto.globalAlpha = 0.6;
+    contexto.fillStyle = estado.corAtiva;
+
+    for (const celula of estado.previaForma.celulas) {
+        const celulaX = celula.celulaX + origemX;
+        const celulaZ = celula.celulaZ + origemZ;
+
+        if (celulaX < limites.primeiraCelulaX || celulaX >= limites.ultimaCelulaX
+            || celulaZ < limites.primeiraCelulaZ || celulaZ >= limites.ultimaCelulaZ) {
+            continue;
+        }
+
+        contexto.fillRect(celulaXParaPixel(celulaX), celulaZParaPixel(celulaZ), tamanho, tamanho);
+    }
+
+    contexto.globalAlpha = 1;
+}
+
 function limparDesenho() {
     contexto.clearRect(0, 0, gridDesenho.width, gridDesenho.height);
 }
@@ -205,14 +236,28 @@ export function verificarPosicaoCelula(celulaX, celulaZ) {
         && celulaZ >= 0 && celulaZ < estado.projetoAberto.dimensaoZ;
 }
 
+export function centroVisivelCelula() {
+    const celulaX = Math.floor(pixelParaCelulaX(gridDesenho.width / 2));
+    const celulaZ = Math.floor(pixelParaCelulaZ(gridDesenho.height / 2));
+
+    return {
+        celulaX: restringirValor(celulaX, 0, estado.projetoAberto.dimensaoX - 1),
+        celulaZ: restringirValor(celulaZ, 0, estado.projetoAberto.dimensaoZ - 1)
+    };
+}
+
 function redesenhar() {
     redesenhoPendente = false;
     aplicarLimiteDeTamanho();
     limitarCamera();
     limparDesenho();
     desenharCelulas();
+    desenharPreviaForma();
     criarGrid();
     destacarCelula();
+
+    gridPrevia.hidden = estado.previaForma === null;
+    gridPropriedadesForma.hidden = estado.previaForma === null;
 }
 
 export function pedirRedesenho() {
@@ -243,6 +288,9 @@ export function exibirProjeto(projeto) {
     estado.projetoAberto = dadosProjeto;
     celulasDescartar();
     historicoZerar();
+    estado.formas = new Map();
+    estado.proximaIdForma = 1;
+    estado.previaForma = null;
     celulasCarregar(camadas ?? []);
     estado.celulaDestacada = null;
     reiniciarCamadaY();
@@ -253,6 +301,7 @@ export function exibirProjeto(projeto) {
     gridDesenho.hidden = false;
     pedirRedesenho();
     abasSincronizar();
+    listaSincronizar();
     guardarUltimoProjeto(projeto.idProjeto);
 }
 
@@ -260,6 +309,9 @@ export function limparProjeto() {
     estado.projetoAberto = null;
     celulasDescartar();
     historicoZerar();
+    estado.formas = new Map();
+    estado.proximaIdForma = 1;
+    estado.previaForma = null;
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     estado.abaAtiva = null;
@@ -267,6 +319,8 @@ export function limparProjeto() {
     gridDesenho.hidden = true;
     gridMensagemVazio.hidden = false;
     abasSincronizar();
+    listaSincronizar();
+    pedirRedesenho();
 }
 
 function ajustarTamanhoGrid() {

@@ -49,7 +49,7 @@ button, input {
     border-bottom: 1px solid var(--cor-divisor);
 }
 
-#gestao-projetos button, #barra-ferramentas button, #abas button, dialog button {
+#gestao-projetos button, #barra-ferramentas button, #abas button, dialog button, #previa-forma button, #propriedades-forma button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -70,16 +70,16 @@ button, input {
     background-color: var(--cor-hover-gestao);
 }
 
-#barra-ferramentas button:hover:not(:disabled):not(.marcado), #abas button:hover:not(:disabled):not(.marcado), dialog button:hover:not(:disabled):not(.botao-principal) {
+#barra-ferramentas button:hover:not(:disabled):not(.marcado), #abas button:hover:not(:disabled):not(.marcado), dialog button:hover:not(:disabled):not(.botao-principal), #previa-forma button:hover:not(:disabled), #subabas-forma button:hover:not(:disabled):not(.marcado), #forma-botoes button:hover:not(:disabled):not(.botao-principal) {
     background-color: var(--cor-hover-barra);
 }
 
-#gestao-projetos button:focus-visible, #barra-ferramentas button:focus-visible, #abas button:focus-visible, dialog button:focus-visible {
+#gestao-projetos button:focus-visible, #barra-ferramentas button:focus-visible, #abas button:focus-visible, dialog button:focus-visible, #previa-forma button:focus-visible, #propriedades-forma button:focus-visible {
     outline: 2px solid var(--cor-ativo-fundo);
     outline-offset: 2px;
 }
 
-#gestao-projetos button:disabled, #barra-ferramentas button:disabled, #abas button:disabled, dialog button:disabled {
+#gestao-projetos button:disabled, #barra-ferramentas button:disabled, #abas button:disabled, dialog button:disabled, #previa-forma button:disabled, #propriedades-forma button:disabled {
     opacity: var(--opacidade-desabilitado);
     cursor: not-allowed;
 }
@@ -188,6 +188,7 @@ button, input {
     overflow: hidden;
     grid-column: 1 / 3;
     grid-row: 1;
+    position: relative;
 }
 
 #grid-desenho {
@@ -205,6 +206,31 @@ button, input {
     padding: 24px 24px 24px 84px;
     text-align: center;
     font-weight: 700;
+}
+
+#previa-forma {
+    position: absolute;
+    top: 12px;
+    left: 60px;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 10px;
+    background-color: var(--cor-barra);
+    border: 1px solid var(--cor-divisor);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--cor-sombra);
+}
+
+#previa-forma[hidden] {
+    display: none;
+}
+
+#previa-forma button {
+    border-color: var(--cor-divisor);
 }
 
 #painel-lateral {
@@ -304,6 +330,42 @@ button, input {
     color: var(--cor-ativo-texto);
 }
 
+#subabas-forma {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+#subabas-forma button img {
+    width: 16px;
+    height: 16px;
+}
+
+#subabas-forma button.marcado {
+    background-color: var(--cor-grid);
+    border-color: var(--cor-ativo-fundo);
+}
+
+#propriedades-forma fieldset {
+    margin: 0 0 12px;
+    padding: 0;
+    border: none;
+}
+
+#propriedades-forma legend {
+    margin-bottom: 4px;
+    padding: 0;
+    font-weight: 500;
+}
+
+#propriedades-forma fieldset label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 16px 0 0;
+    font-weight: 400;
+}
+
 dialog {
     box-sizing: border-box;
     width: 380px;
@@ -334,17 +396,17 @@ dialog h2 {
     margin-top: 16px;
 }
 
-.botoes-janela button {
+.botoes-janela button, #forma-botoes button {
     border-color: var(--cor-divisor);
 }
 
-.botoes-janela button.botao-principal {
+.botoes-janela button.botao-principal, #forma-botoes button.botao-principal {
     background-color: var(--cor-ativo-fundo);
     color: var(--cor-ativo-texto);
     border-color: var(--cor-ativo-fundo);
 }
 
-#criar-projeto input {
+#criar-projeto input, #propriedades-forma input[type="number"] {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -356,22 +418,22 @@ dialog h2 {
     color: inherit;
 }
 
-#criar-projeto input.campo-invalido {
+#criar-projeto input.campo-invalido, #propriedades-forma input[type="number"].campo-invalido {
     border-color: var(--cor-erro);
 }
 
-#criar-projeto label {
+#criar-projeto label, #propriedades-forma label {
     display: block;
     margin-bottom: 4px;
     font-weight: 500;
 }
 
-#criar-projeto input:focus-visible {
+#criar-projeto input:focus-visible, #propriedades-forma input:focus-visible {
     outline: 2px solid var(--cor-ativo-fundo);
     outline-offset: 1px;
 }
 
-dialog p[role="alert"] {
+dialog p[role="alert"], #forma-alerta {
     margin: 12px 0 0;
     font-weight: 600;
     color: var(--cor-erro);

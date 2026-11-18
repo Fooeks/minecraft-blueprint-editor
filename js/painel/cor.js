@@ -1,4 +1,5 @@
 import { estado } from "../estado.js";
+import { pedirRedesenho } from "../grid.js";
 
 const corCampo = document.getElementById("campo-cor");
 const corPaleta = document.getElementById("paleta");
@@ -83,6 +84,10 @@ function corAtivar(cor, confirmar) {
     }
 
     corSincronizar();
+
+    if (estado.previaForma !== null) {
+        pedirRedesenho();
+    }
 }
 
 function corAmostraClicar(evento, confirmar) {

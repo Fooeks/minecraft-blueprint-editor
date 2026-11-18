@@ -53,6 +53,12 @@ function celulasLerLista(nivelY, chave) {
     return posicoes.get(chave);
 }
 
+export function celulasObter(nivelY, celulaX, celulaZ) {
+    const chave = celulasMontarChave(celulaX, celulaZ);
+
+    return celulasLerLista(nivelY, chave);
+}
+
 function celulasGravarLista(nivelY, chave, lista) {
     if (!estado.camadas.has(nivelY)) {
         estado.camadas.set(nivelY, new Map());
@@ -65,6 +71,52 @@ function celulasGravarLista(nivelY, chave, lista) {
     } else {
         posicoes.set(chave, lista);
     }
+}
+
+export function celulasBloqueada(celula) {
+    if (celula.idForma === null) {
+        return false;
+    }
+
+    return estado.formas.get(celula.idForma)?.bloqueado === true;
+}
+
+export function celulasListaInserir(lista, celula, listaSimples) {
+    const bloqueadas = lista.filter(celulasBloqueada);
+
+    if (bloqueadas.length === 0) {
+        return listaSimples;
+    }
+
+    const resultado = [];
+
+    for (const bloqueada of bloqueadas) {
+        resultado.push(Object.freeze({ ...bloqueada, ordem: resultado.length }));
+    }
+
+    resultado.push(Object.freeze({ ...celula, ordem: resultado.length }));
+
+    return Object.freeze(resultado);
+}
+
+export function celulasListaSoltar(lista, idForma) {
+    let mudou = false;
+    const resultado = [];
+
+    for (const celula of lista) {
+        if (celula.idForma === idForma) {
+            resultado.push(Object.freeze({ ...celula, idForma: null }));
+            mudou = true;
+        } else {
+            resultado.push(celula);
+        }
+    }
+
+    if (!mudou) {
+        return lista;
+    }
+
+    return Object.freeze(resultado);
 }
 
 export function celulasAlterar(nivelY, alteracoes) {

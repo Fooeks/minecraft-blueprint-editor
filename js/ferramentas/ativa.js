@@ -1,7 +1,7 @@
 import { estado } from "../estado.js";
 import { pedirRedesenho } from "../grid.js";
 
-const nomesFerramentas = ["selecao", "mover", "pincel", "balde", "formas", "borracha", "regua"];
+const nomesFerramentas = ["selecao", "mover", "pincel", "balde", "borracha", "regua"];
 const atalhosFerramentas = { p: "pincel", e: "borracha" };
 
 function marcarAtiva(ferramenta) {
@@ -20,6 +20,11 @@ export function selecionarFerramenta(ferramenta) {
     }
 
     estado.ferramenta = ferramenta;
+
+    if (ferramenta !== "selecao" && ferramenta !== "mover") {
+        estado.previaForma = null;
+    }
+
     marcarAtiva(ferramenta);
     pedirRedesenho();
 }
