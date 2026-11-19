@@ -1,6 +1,7 @@
 import { estado } from "./estado.js";
 import { pedirRedesenho } from "./grid.js";
 import { celulasLimiteCamadaY, celulasApagarCamadasYVazias, celulasCamadaYMaxima, celulasEventoMudou } from "./celulas.js";
+import { formaRascunhoDescartar } from "./forma.js";
 
 const camadaYCampo = document.getElementById("campo-camada-y");
 const camadaYSlider = document.getElementById("slider-camada-y");
@@ -19,6 +20,7 @@ export function camadaYMudar(nivelY) {
 
     if (valido && nivelY !== estado.camadaAtiva) {
         estado.camadaAtiva = nivelY;
+        formaRascunhoDescartar();
         celulasApagarCamadasYVazias();
         pedirRedesenho();
     }

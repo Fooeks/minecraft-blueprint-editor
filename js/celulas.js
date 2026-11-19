@@ -119,6 +119,26 @@ export function celulasListaSoltar(lista, idForma) {
     return Object.freeze(resultado);
 }
 
+export function celulasListaRemover(lista, idForma) {
+    let removeu = false;
+    const resultado = [];
+
+    for (const celula of lista) {
+        if (celula.idForma === idForma) {
+            removeu = true;
+            continue;
+        }
+
+        resultado.push(Object.freeze({ ...celula, ordem: resultado.length }));
+    }
+
+    if (!removeu) {
+        return lista;
+    }
+
+    return Object.freeze(resultado);
+}
+
 export function celulasAlterar(nivelY, alteracoes) {
     if (estado.projetoAberto === null) {
         return [];

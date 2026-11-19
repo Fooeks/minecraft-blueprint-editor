@@ -4,6 +4,7 @@ import { camadaYMudar } from "../camada.js";
 import { celulasEventoMudou } from "../celulas.js";
 import { historicoAoMudar, historicoDesfazer, historicoRefazer } from "../historico.js";
 import { campoDeTexto, janelaAberta } from "./ativa.js";
+import { formaRascunhoDescartar } from "../forma.js";
 
 const desfazerBotao = document.getElementById("ferr-desfazer");
 const refazerBotao = document.getElementById("ferr-refazer");
@@ -26,6 +27,7 @@ function desfazerAplicar(funcaoHistorico) {
         return;
     }
 
+    formaRascunhoDescartar();
     camadaYMudar(nivelY);
     pedirRedesenho();
     document.dispatchEvent(new Event(celulasEventoMudou));

@@ -1,7 +1,9 @@
 import { estado } from "./estado.js";
-import { celulasObter, celulasListaSoltar, celulasAlterar, celulasListaInserir } from "./celulas.js";
+import { celulasObter, celulasListaSoltar, celulasAlterar, celulasListaInserir, celulasListaRemover } from "./celulas.js";
 import { historicoRegistrar, historicoRegistrarForma } from "./historico.js";
 import { geometriaLimite, geometriaRasterizar } from "./geometria.js";
+
+export const formaEventoRascunhoMudou = "formarascunhomudou";
 
 export function formaDissolver(idForma) {
     const forma = estado.formas.get(idForma);
@@ -68,6 +70,23 @@ export function formaAlterarCelulas(nivelY, alteracoes, modo) {
     return mudancas;
 }
 
+function formaGravarCelulas(forma) {
+    const celulaNova = Object.freeze({ cor: forma.cor, idForma: forma.idForma, idGrupo: null, ordem: 0 });
+    const listaSimples = Object.freeze([celulaNova]);
+    const alteracoes = [];
+
+    for (const posicao of geometriaRasterizar(forma)) {
+        const lista = celulasObter(forma.nivelY, posicao.celulaX, posicao.celulaZ);
+        const listaNova = celulasListaInserir(lista, celulaNova, listaSimples);
+
+        alteracoes.push({ celulaX: posicao.celulaX, celulaZ: posicao.celulaZ, depois: listaNova });
+    }
+
+    const mudancas = formaAlterarCelulas(forma.nivelY, alteracoes, "sobrescrever");
+
+    historicoRegistrar(mudancas);
+}
+
 export function formaInserir(parametros) {
     const id = estado.proximaIdForma;
 
@@ -84,22 +103,58 @@ export function formaInserir(parametros) {
     estado.formas.set(id, forma);
     historicoRegistrarForma(id, forma.nivelY, null, forma);
 
-    const celulaNova = Object.freeze({ cor: parametros.cor, idForma: id, idGrupo: null, ordem: 0 });
-    const listaSimples = Object.freeze([celulaNova]);
-    const alteracoes = [];
-
-    for (const posicao of geometriaRasterizar(forma)) {
-        const lista = celulasObter(forma.nivelY, posicao.celulaX, posicao.celulaZ);
-        const listaNova = celulasListaInserir(lista, celulaNova, listaSimples);
-
-        alteracoes.push({ celulaX: posicao.celulaX, celulaZ: posicao.celulaZ, depois: listaNova });
-    }
-
-    const mudancas = formaAlterarCelulas(forma.nivelY, alteracoes, "sobrescrever");
-
-    historicoRegistrar(mudancas);
+    formaGravarCelulas(forma);
 
     return forma;
+}
+
+export function formaAtualizar(idForma, parametros) {
+    const original = estado.formas.get(idForma);
+
+    if (original === undefined) {
+        return null;
+    }
+
+    const apagar = [];
+
+    for (const posicao of geometriaRasterizar(original)) {
+        const lista = celulasObter(original.nivelY, posicao.celulaX, posicao.celulaZ);
+        const listaNova = celulasListaRemover(lista, idForma);
+
+        if (listaNova !== lista) {
+            apagar.push({ celulaX: posicao.celulaX, celulaZ: posicao.celulaZ, depois: listaNova });
+        }
+    }
+
+    historicoRegistrar(celulasAlterar(original.nivelY, apagar));
+
+    const nova = Object.freeze({
+        ...parametros,
+        idForma: idForma,
+        nivelY: original.nivelY,
+        nome: original.nome,
+        tipo: original.tipo,
+        bloqueado: original.bloqueado
+    });
+
+    estado.formas.set(idForma, nova);
+    historicoRegistrarForma(idForma, original.nivelY, original, nova);
+
+    formaGravarCelulas(nova);
+
+    return nova;
+}
+
+export function formaRascunhoDescartar() {
+    if (estado.previaForma === null) {
+        return;
+    }
+
+    if (estado.previaForma.idForma === null) {
+        return;
+    }
+
+    estado.previaForma = null;
 }
 
 export function formaMontarCelulaPintada(lista, celulaX, celulaZ, cor) {

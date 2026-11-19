@@ -2,7 +2,7 @@ import { estado } from "../estado.js";
 import { pedirRedesenho } from "../grid.js";
 
 const nomesFerramentas = ["selecao", "mover", "pincel", "balde", "borracha", "regua"];
-const atalhosFerramentas = { p: "pincel", e: "borracha" };
+const atalhosFerramentas = { p: "pincel", e: "borracha", v: "selecao" };
 
 function marcarAtiva(ferramenta) {
     const anterior = document.querySelector("#barra-ferramentas .marcado");

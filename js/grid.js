@@ -136,12 +136,17 @@ const opacidadeCamadaYAbaixo = 0.3;
 function desenharCamadaY(nivelY, opacidade) {
     const limites = calcularLimitesVisiveis();
     const tamanho = estado.camera.pixelsPorCelula;
+    const idEmEdicao = estado.previaForma !== null ? estado.previaForma.idForma : null;
     let corAtual = null;
 
     contexto.globalAlpha = opacidade;
-
+  
     celulasPercorrer(nivelY, limites, (celulaX, celulaZ, lista) => {
         const celula = lista[0];
+
+        if (idEmEdicao !== null && celula.idForma === idEmEdicao) {
+            return;
+        }
 
         if (celula.cor !== corAtual) {
             contexto.fillStyle = celula.cor;
@@ -177,7 +182,7 @@ function desenharPreviaForma() {
     const origemZ = estado.previaForma.forma.posicaoZ;
 
     contexto.globalAlpha = 0.6;
-    contexto.fillStyle = estado.corAtiva;
+    contexto.fillStyle = estado.previaForma.forma.cor;
 
     for (const celula of estado.previaForma.celulas) {
         const celulaX = celula.celulaX + origemX;

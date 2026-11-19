@@ -1,11 +1,11 @@
 import { estado } from "../estado.js";
-import { geometriaRasterizar } from "../geometria.js";
-import { pedirRedesenho, centroVisivelCelula } from "../grid.js";
+import { geometriaRasterizar, geometriaDentro } from "../geometria.js";
+import { pedirRedesenho, centroVisivelCelula, pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula } from "../grid.js";
 import { abasSincronizar } from "../painel/abas.js";
 import { selecionarFerramenta, janelaAberta, campoDeTexto } from "./ativa.js";
-import { formaInserir } from "../forma.js";
+import { formaInserir, formaAtualizar, formaEventoRascunhoMudou } from "../forma.js";
 import { historicoFecharAcao, historicoIniciarAcao } from "../historico.js";
-import { celulasEventoMudou } from "../celulas.js";
+import { celulasBloqueada, celulasEventoMudou, celulasObter } from "../celulas.js";
 
 const formasCampoX = document.getElementById("campo-forma-dimensao-x");
 const formasCampoZ = document.getElementById("campo-forma-dimensao-z");
@@ -23,8 +23,11 @@ const formasBotaoFormas = document.getElementById("ferr-formas");
 const formasBotaoCancelarPainel = document.getElementById("btn-forma-cancelar");
 const formasBotaoCancelarBarra = document.getElementById("btn-previa-cancelar");
 const formasRadiosEstilo = document.querySelectorAll('input[name="forma-estilo"]');
+const gridDesenho = document.getElementById("grid-desenho");
 
 let formasTipo = "poligono";
+let formasCamposValidos = false;
+let formasArrasto = null;
 
 function formasLerNumero(campo) {
     if (campo.value.trim() === "") {
@@ -35,6 +38,7 @@ function formasLerNumero(campo) {
 }
 
 function formasLerParametros() {
+    const rascunhoExistente = estado.previaForma !== null && estado.previaForma.idForma !== null;
     const dimensaoX = formasLerNumero(formasCampoX);
     const dimensaoZ = formasLerNumero(formasCampoZ);
     const lados = formasLerNumero(formasCampoLados);
@@ -82,7 +86,7 @@ function formasLerParametros() {
             expoente: formasTipo === "superelipse" ? expoente : null,
             estilo: estiloMarcado,
             rotacao: ((rotacao % 360) + 360) % 360,
-            cor: estado.corAtiva
+            cor: rascunhoExistente ? estado.previaForma.forma.cor : estado.corAtiva
         },
         erro: null
     };
@@ -109,9 +113,39 @@ function formasPosicionar(parametros, centroX, centroZ) {
     };
 }
 
-function formasPermitirInserir(permitido) {
-    formasBotaoConfirmarPainel.disabled = !permitido;
-    formasBotaoConfirmarBarra.disabled = !permitido;
+const formasCamposEditaveis = ["dimensaoX", "dimensaoZ", "lados", "expoente", "estilo", "rotacao", "cor", "posicaoX", "posicaoZ"];
+
+function formasRascunhoAlterado() {
+    const rascunho = estado.previaForma;
+
+    if (rascunho === null) {
+        return false;
+    }
+
+    if (rascunho.idForma === null) {
+        return true;
+    }
+
+    for (const campo of formasCamposEditaveis) {
+        if (rascunho.forma[campo] !== rascunho.original[campo]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function formasSincronizarBotoes() {
+    const edicaoExistente = estado.previaForma !== null && estado.previaForma.idForma !== null;
+    const rotulo = edicaoExistente ? "Aplicar" : "Inserir";
+
+    formasBotaoConfirmarBarra.textContent = rotulo + " (Enter)";
+    formasBotaoConfirmarPainel.textContent = rotulo;
+
+    const bloqueado = !formasCamposValidos || !formasRascunhoAlterado();
+
+    formasBotaoConfirmarBarra.disabled = bloqueado;
+    formasBotaoConfirmarPainel.disabled = bloqueado;
 }
 
 function formasAtualizarPrevia() {
@@ -119,7 +153,8 @@ function formasAtualizarPrevia() {
 
     if (parametros === null) {
         formasMostrarAlerta(erro);
-        formasPermitirInserir(false);
+        formasCamposValidos = false;
+        formasSincronizarBotoes();
         return;
     }
 
@@ -127,7 +162,8 @@ function formasAtualizarPrevia() {
 
     if (celulas.length === 0) {
         formasMostrarAlerta("A forma não ocupa nenhuma célula com esses parâmetros.");
-        formasPermitirInserir(false);
+        formasCamposValidos = false;
+        formasSincronizarBotoes();
         return;
     }
 
@@ -147,10 +183,19 @@ function formasAtualizarPrevia() {
     }
 
     const posicao = formasPosicionar(parametros, centroX, centroZ);
+    const idForma = estado.previaForma !== null ? estado.previaForma.idForma : null;
+    const original = estado.previaForma !== null ? estado.previaForma.original : null;
 
-    estado.previaForma = { forma: { ...parametros, ...posicao }, celulas: celulas };
+    estado.previaForma = {
+        forma: { ...parametros, ...posicao },
+        celulas: celulas,
+        idForma: idForma,
+        original: original
+    };
+
     formasMostrarAlerta(null);
-    formasPermitirInserir(true);
+    formasCamposValidos = true;
+    formasSincronizarBotoes();
     pedirRedesenho();
 }
 
@@ -176,6 +221,9 @@ function formasCriarPrevia() {
     document.querySelector('input[name="forma-estilo"][value="contorno"]').checked = true;
     formasTrocarTipo("poligono");
 
+    formasSubabaPoligono.disabled = false;
+    formasSubabaSuperelipse.disabled = false;
+
     estado.previaForma = null;
 
     formasAtualizarPrevia();
@@ -183,6 +231,138 @@ function formasCriarPrevia() {
     estado.abaAtiva = "propriedades";
     abasSincronizar();
     selecionarFerramenta("selecao");
+}
+
+function formasSelecionar(idForma) {
+    const forma = estado.formas.get(idForma);
+
+    if (forma === undefined || forma.bloqueado) {
+        return;
+    }
+
+    selecionarFerramenta("selecao");
+
+    formasCampoX.value = forma.dimensaoX;
+    formasCampoZ.value = forma.dimensaoZ;
+    formasCampoLados.value = forma.lados ?? 4;
+    formasCampoExpoente.value = forma.expoente ?? 2;
+    formasCampoRotacao.value = forma.rotacao;
+    document.querySelector('input[name="forma-estilo"][value="' + forma.estilo + '"]').checked = true;
+
+    formasTrocarTipo(forma.tipo);
+    formasSubabaPoligono.disabled = forma.tipo !== "poligono";
+    formasSubabaSuperelipse.disabled = forma.tipo !== "superelipse";
+
+    estado.previaForma = { forma: forma, celulas: [], idForma: idForma, original: forma };
+
+    formasAtualizarPrevia();
+
+    estado.abaAtiva = "propriedades";
+    abasSincronizar();
+}
+
+function formasArrastoIniciar(evento, celulaX, celulaZ) {
+    const forma = estado.previaForma.forma;
+
+    formasArrasto = {
+        celulaX: celulaX,
+        celulaZ: celulaZ,
+        posicaoX: forma.posicaoX,
+        posicaoZ: forma.posicaoZ
+    };
+
+    gridDesenho.setPointerCapture(evento.pointerId);
+}
+
+function formasAlvoSelecionavel(celulaX, celulaZ) {
+    if (!verificarPosicaoCelula(celulaX, celulaZ)) {
+        return null;
+    }
+
+    const lista = celulasObter(estado.camadaAtiva, celulaX, celulaZ);
+
+    if (lista.length === 0) {
+        return null;
+    }
+
+    const celula = lista[0];
+
+    if (celula.idForma === null || celulasBloqueada(celula)) {
+        return null;
+    }
+
+    if (estado.previaForma !== null && estado.previaForma.idForma === celula.idForma) {
+        return null;
+    }
+
+    return celula.idForma;
+}
+
+function formasPonteiroBaixo(evento) {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    if (evento.button !== 0 || estado.ferramenta !== "selecao") {
+        return;
+    }
+
+    const celulaX = Math.floor(pixelParaCelulaX(evento.offsetX));
+    const celulaZ = Math.floor(pixelParaCelulaZ(evento.offsetY));
+
+    if (estado.previaForma !== null && geometriaDentro(estado.previaForma.forma, celulaX, celulaZ)) {
+        formasArrastoIniciar(evento, celulaX, celulaZ);
+        return;
+    }
+
+    const idAlvo = formasAlvoSelecionavel(celulaX, celulaZ);
+
+    if (idAlvo !== null) {
+        formasSelecionar(idAlvo);
+
+        if (estado.previaForma !== null) {
+            formasArrastoIniciar(evento, celulaX, celulaZ);
+        }
+
+        return;
+    }
+
+    estado.previaForma = null;
+    pedirRedesenho();
+}
+
+function formasPonteiroMover(evento) {
+    if (formasArrasto === null) {
+        return;
+    }
+
+    if (estado.projetoAberto === null || estado.previaForma === null || estado.ferramenta !== "selecao") {
+        return;
+    }
+
+    const celulaX = Math.floor(pixelParaCelulaX(evento.offsetX));
+    const celulaZ = Math.floor(pixelParaCelulaZ(evento.offsetY));
+    const forma = estado.previaForma.forma;
+
+    const centroX = formasArrasto.posicaoX + (celulaX - formasArrasto.celulaX) + Math.floor(forma.dimensaoX / 2);
+    const centroZ = formasArrasto.posicaoZ + (celulaZ - formasArrasto.celulaZ) + Math.floor(forma.dimensaoZ / 2);
+    const posicao = formasPosicionar(forma, centroX, centroZ);
+
+    if (posicao.posicaoX === forma.posicaoX && posicao.posicaoZ === forma.posicaoZ) {
+        return;
+    }
+
+    estado.previaForma = {
+        ...estado.previaForma,
+        forma: { ...forma, ...posicao }
+    };
+
+    formasSincronizarBotoes();
+    pedirRedesenho();
+}
+
+function formasPonteiroSoltar() {
+    formasArrasto = null;
 }
 
 function formasConfirmar() {
@@ -194,10 +374,16 @@ function formasConfirmar() {
         return;
     }
 
-    const parametros = { ...estado.previaForma.forma, cor: estado.corAtiva };
+    const parametros = estado.previaForma.forma;
 
     historicoIniciarAcao();
-    formaInserir(parametros);
+
+    if (estado.previaForma.idForma !== null) {
+        formaAtualizar(estado.previaForma.idForma, parametros);
+    } else {
+        formaInserir(parametros);
+    }
+
     historicoFecharAcao();
 
     estado.previaForma = null;
@@ -276,6 +462,11 @@ export function formasIniciar() {
     formasBotaoConfirmarBarra.addEventListener("click", formasConfirmar);
     formasBotaoCancelarPainel.addEventListener("click", formasCancelar);
     formasBotaoCancelarBarra.addEventListener("click", formasCancelar);
+    gridDesenho.addEventListener("pointerdown", formasPonteiroBaixo);
+    gridDesenho.addEventListener("pointermove", formasPonteiroMover);
+    gridDesenho.addEventListener("pointerup", formasPonteiroSoltar);
+    gridDesenho.addEventListener("pointercancel", formasPonteiroSoltar);
+    document.addEventListener(formaEventoRascunhoMudou, formasSincronizarBotoes);
 
     document.addEventListener("keydown", formasTeclado);
 }

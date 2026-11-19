@@ -1,5 +1,6 @@
 import { estado } from "../estado.js";
 import { pedirRedesenho } from "../grid.js";
+import { formaEventoRascunhoMudou } from "../forma.js";
 
 const corCampo = document.getElementById("campo-cor");
 const corPaleta = document.getElementById("paleta");
@@ -77,8 +78,12 @@ function corSincronizar() {
 }
 
 function corAtivar(cor, confirmar) {
-    estado.corAtiva = cor;
+    const rascunhoExistente = estado.previaForma !== null && estado.previaForma.idForma !== null;
 
+    if (!rascunhoExistente) {
+        estado.corAtiva = cor;
+    }
+    
     if (confirmar) {
         corRecenteRegistrar(cor);
     }
@@ -86,6 +91,12 @@ function corAtivar(cor, confirmar) {
     corSincronizar();
 
     if (estado.previaForma !== null) {
+        estado.previaForma = {
+            ...estado.previaForma,
+            forma: { ...estado.previaForma.forma, cor: cor }
+        };
+
+        document.dispatchEvent(new Event(formaEventoRascunhoMudou));
         pedirRedesenho();
     }
 }
