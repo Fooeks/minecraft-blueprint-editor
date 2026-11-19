@@ -4,6 +4,7 @@ import { historicoRegistrar, historicoRegistrarForma } from "./historico.js";
 import { geometriaLimite, geometriaRasterizar } from "./geometria.js";
 
 export const formaEventoRascunhoMudou = "formarascunhomudou";
+export const formaEventoSelecionar = "formaselecionar";
 
 export function formaDissolver(idForma) {
     const forma = estado.formas.get(idForma);

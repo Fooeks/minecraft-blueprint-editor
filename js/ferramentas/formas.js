@@ -3,9 +3,10 @@ import { geometriaRasterizar, geometriaDentro } from "../geometria.js";
 import { pedirRedesenho, centroVisivelCelula, pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula } from "../grid.js";
 import { abasSincronizar } from "../painel/abas.js";
 import { selecionarFerramenta, janelaAberta, campoDeTexto } from "./ativa.js";
-import { formaInserir, formaAtualizar, formaEventoRascunhoMudou } from "../forma.js";
+import { formaInserir, formaAtualizar, formaEventoRascunhoMudou, formaEventoSelecionar } from "../forma.js";
 import { historicoFecharAcao, historicoIniciarAcao } from "../historico.js";
 import { celulasBloqueada, celulasEventoMudou, celulasObter } from "../celulas.js";
+import { camadaYMudar } from "../camada.js";
 
 const formasCampoX = document.getElementById("campo-forma-dimensao-x");
 const formasCampoZ = document.getElementById("campo-forma-dimensao-z");
@@ -261,6 +262,25 @@ function formasSelecionar(idForma) {
     abasSincronizar();
 }
 
+function formasSelecionarPorEvento(evento) {
+    if (estado.projetoAberto === null) {
+        return;
+    }
+
+    const forma = estado.formas.get(evento.detail.idForma);
+
+    if (forma === undefined || forma.bloqueado) {
+        return;
+    }
+
+    if (forma.nivelY !== estado.camadaAtiva) {
+        camadaYMudar(forma.nivelY);
+    }
+
+    formasSelecionar(forma.idForma);
+}
+
+
 function formasArrastoIniciar(evento, celulaX, celulaZ) {
     const forma = estado.previaForma.forma;
 
@@ -467,6 +487,7 @@ export function formasIniciar() {
     gridDesenho.addEventListener("pointerup", formasPonteiroSoltar);
     gridDesenho.addEventListener("pointercancel", formasPonteiroSoltar);
     document.addEventListener(formaEventoRascunhoMudou, formasSincronizarBotoes);
+    document.addEventListener(formaEventoSelecionar, formasSelecionarPorEvento);
 
     document.addEventListener("keydown", formasTeclado);
 }

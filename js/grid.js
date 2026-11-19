@@ -3,7 +3,7 @@ import { guardarUltimoProjeto } from "./armazenamento.js";
 import { celulasCarregar, celulasDescartar, celulasLimiteCamadaY, celulasPercorrer } from "./celulas.js";
 import { abasSincronizar } from "./painel/abas.js";
 import { historicoZerar } from "./historico.js";
-import { listaSincronizar } from "./painel/lista.js";
+import { listaSincronizar, listaMarcarSelecionada } from "./painel/lista.js";
 
 const gridGrid = document.getElementById("grid");
 const gridMensagemVazio = document.getElementById("mensagem-vazio");
@@ -263,6 +263,8 @@ function redesenhar() {
 
     gridPrevia.hidden = estado.previaForma === null;
     gridPropriedadesForma.hidden = estado.previaForma === null;
+
+    listaMarcarSelecionada();
 }
 
 export function pedirRedesenho() {

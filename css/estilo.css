@@ -70,16 +70,32 @@ button, input {
     background-color: var(--cor-hover-gestao);
 }
 
-#barra-ferramentas button:hover:not(:disabled):not(.marcado), #abas button:hover:not(:disabled):not(.marcado), dialog button:hover:not(:disabled):not(.botao-principal), #previa-forma button:hover:not(:disabled), #subabas-forma button:hover:not(:disabled):not(.marcado), #forma-botoes button:hover:not(:disabled):not(.botao-principal) {
+#barra-ferramentas button:hover:not(:disabled):not(.marcado),
+#abas button:hover:not(:disabled):not(.marcado),
+dialog button:hover:not(:disabled):not(.botao-principal),
+#previa-forma button:hover:not(:disabled),
+#subabas-forma button:hover:not(:disabled):not(.marcado),
+#forma-botoes button:hover:not(:disabled):not(.botao-principal),
+#lista-formas button:hover:not(.marcado) {
     background-color: var(--cor-hover-barra);
 }
 
-#gestao-projetos button:focus-visible, #barra-ferramentas button:focus-visible, #abas button:focus-visible, dialog button:focus-visible, #previa-forma button:focus-visible, #propriedades-forma button:focus-visible {
+#gestao-projetos button:focus-visible,
+#barra-ferramentas button:focus-visible,
+#abas button:focus-visible, dialog button:focus-visible,
+#previa-forma button:focus-visible,
+#propriedades-forma button:focus-visible,
+#lista-formas button:focus-visible {
     outline: 2px solid var(--cor-ativo-fundo);
     outline-offset: 2px;
 }
 
-#gestao-projetos button:disabled, #barra-ferramentas button:disabled, #abas button:disabled, dialog button:disabled, #previa-forma button:disabled, #propriedades-forma button:disabled {
+#gestao-projetos button:disabled,
+#barra-ferramentas button:disabled,
+#abas button:disabled,
+dialog button:disabled,
+#previa-forma button:disabled,
+#propriedades-forma button:disabled {
     opacity: var(--opacidade-desabilitado);
     cursor: not-allowed;
 }
@@ -327,6 +343,35 @@ button, input {
 
 #abas button.marcado {
     background: var(--cor-ativo-fundo);
+    color: var(--cor-ativo-texto);
+}
+
+#lista-formas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#lista-formas li + li {
+    margin-top: 4px;
+}
+
+#lista-formas button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background-color: transparent;
+    color: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+#lista-formas button.marcado {
+    background-color: var(--cor-ativo-fundo);
     color: var(--cor-ativo-texto);
 }
 
