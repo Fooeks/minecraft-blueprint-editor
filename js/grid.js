@@ -288,6 +288,30 @@ function reiniciarCamera() {
     centralizarCamera();
 }
 
+function carregarFormas(camadas) {
+    for (const camadaY of camadas) {
+        for (const forma of camadaY.formas ?? []) {
+            estado.formas.set(forma.idForma, Object.freeze({
+                idForma: forma.idForma,
+                nivelY: camadaY.nivelY,
+                nome: forma.tipo === "poligono" ? "Polígono " + forma.idForma : "Superelipse " + forma.idForma,
+                tipo: forma.tipo,
+                estilo: forma.estilo,
+                cor: forma.cor,
+                posicaoX: forma.posicaoX,
+                posicaoZ: forma.posicaoZ,
+                dimensaoX: forma.dimensaoX,
+                dimensaoZ: forma.dimensaoZ,
+                rotacao: forma.rotacao,
+                lados: forma.lados,
+                expoente: forma.expoente,
+                bloqueado: forma.bloqueado,
+            }));
+        }
+    }
+
+    estado.proximaIdForma = estado.formas.size + 1;
+}
 
 export function exibirProjeto(projeto) {
     const { camadas, ...dadosProjeto} = projeto;
@@ -299,6 +323,7 @@ export function exibirProjeto(projeto) {
     estado.proximaIdForma = 1;
     estado.previaForma = null;
     celulasCarregar(camadas ?? []);
+    carregarFormas(camadas ?? []);
     estado.celulaDestacada = null;
     reiniciarCamadaY();
     reiniciarCamera();

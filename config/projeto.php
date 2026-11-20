@@ -103,6 +103,19 @@ function apagarCelulas(PDO $pdo, string $idProjeto): void
     $stmt->execute([':id_projeto' => $idProjeto]);
 }
 
+function apagarFormas(PDO $pdo, string $idProjeto): void
+{
+    $stmt = $pdo->prepare(
+        'DELETE FROM forma
+         WHERE id_camada IN (
+             SELECT id_camada
+             FROM camada_y
+             WHERE id_projeto = :id_projeto
+         )'
+    );
+    $stmt->execute([':id_projeto' => $idProjeto]);
+}
+
 function apagarCamadasYAcima(PDO $pdo, string $idProjeto, int $maiorCamada): void
 {
     $stmt = $pdo->prepare(
@@ -159,19 +172,44 @@ function inserirCelulas(PDO $pdo, int $idCamadaY, array $celulas): void
         $parametros = [];
 
         foreach ($lista as $i => $celula) {
-            $valores[] = "(:id_camada_$i, :posicao_x_$i, :posicao_z_$i, :cor_$i)";
+            $valores[] = "(:id_camada_$i, :posicao_x_$i, :posicao_z_$i, :cor_$i, :id_forma_$i)";
             $parametros[":id_camada_$i"] = $idCamadaY;
             $parametros[":posicao_x_$i"] = $celula[0];
             $parametros[":posicao_z_$i"] = $celula[1];
             $parametros[":cor_$i"]       = $celula[2];
+            $parametros[":id_forma_$i"]  = $celula[3];
         }
 
         $stmt = $pdo->prepare(
-            'INSERT INTO celula (id_camada, posicao_x, posicao_z, cor)
+            'INSERT INTO celula (id_camada, posicao_x, posicao_z, cor, id_forma)
              VALUES ' . implode(', ', $valores)
         );
         $stmt->execute($parametros);
     }
+}
+
+function inserirForma(PDO $pdo, int $idCamadaY, array $forma): int
+{
+    $stmt = $pdo->prepare(
+        'INSERT INTO forma (id_camada, tipo, posicao_x, posicao_z, dimensao_x, dimensao_z, rotacao, quantidade_lados, expoente, estilo, cor, bloqueado)
+         VALUES (:id_camada, :tipo, :posicao_x, :posicao_z, :dimensao_x, :dimensao_z, :rotacao, :quantidade_lados, :expoente, :estilo, :cor, :bloqueado)'
+    );
+    $stmt->execute([
+        ':id_camada'        => $idCamadaY,
+        ':tipo'             => $forma['tipo'],
+        ':posicao_x'        => $forma['posicaoX'],
+        ':posicao_z'        => $forma['posicaoZ'],
+        ':dimensao_x'       => $forma['dimensaoX'],
+        ':dimensao_z'       => $forma['dimensaoZ'],
+        ':rotacao'          => $forma['rotacao'],
+        ':quantidade_lados' => $forma['lados'],
+        ':expoente'         => $forma['expoente'],
+        ':estilo'           => $forma['estilo'],
+        ':cor'              => $forma['cor'],
+        ':bloqueado'        => (int) $forma['bloqueado'],
+    ]);
+
+    return (int) $pdo->lastInsertId();
 }
 
 function atualizarDataProjeto(PDO $pdo, string $idProjeto): void
@@ -187,7 +225,7 @@ function atualizarDataProjeto(PDO $pdo, string $idProjeto): void
 function buscarCamadasY(PDO $pdo, string $idProjeto): array
 {
     $stmt = $pdo->prepare(
-        'SELECT camada_y.nivel_y, celula.cor, celula.posicao_x, celula.posicao_z
+        'SELECT camada_y.nivel_y, celula.cor, celula.posicao_x, celula.posicao_z, celula.id_forma
          FROM celula
          INNER JOIN camada_y ON camada_y.id_camada = celula.id_camada
          WHERE camada_y.id_projeto = :id_projeto
@@ -201,27 +239,147 @@ function buscarCamadasY(PDO $pdo, string $idProjeto): array
         $nivelY   = (int) $registro['nivel_y'];
         $cor = $registro['cor'];
         $posicao  = (int) $registro['posicao_x'] * 1000 + (int) $registro['posicao_z'];
+        $idForma = (int) $registro['id_forma'];
 
-        $agrupadas[$nivelY][$cor][] = $posicao;
+        $agrupadas[$nivelY][$idForma][$cor][] = $posicao;
     }
 
     $camadasY = [];
 
-    foreach ($agrupadas as $nivelY => $porCor) {
+    foreach ($agrupadas as $nivelY => $porForma) {
         $cores = [];
+        $celulasDasFormas = [];
 
-        foreach ($porCor as $cor => $posicoes) {
-            $cores[] = [
-                'cor' => $cor,
-                'posicoes' => $posicoes,
-            ];
+        foreach ($porForma as $idForma => $porCor) {
+            $lista = [];
+
+            foreach ($porCor as $cor => $posicoes) {
+                $lista[] = [
+                    'cor' => $cor,
+                    'posicoes' => $posicoes,
+                ];
+            }
+
+            if ($idForma === 0) {
+                $cores = $lista;
+            } else {
+                $celulasDasFormas[] = ['idForma' => $idForma, 'cores' => $lista];
+            }
         }
 
         $camadasY[] = [
-            'nivelY' => $nivelY,
-            'cores' => $cores,
+            'nivelY'           => $nivelY,
+            'cores'            => $cores,
+            'celulasDasFormas' => $celulasDasFormas,
         ];
     }
 
     return $camadasY;
+}
+
+function buscarFormas(PDO $pdo, string $idProjeto): array
+{
+    $stmt = $pdo->prepare(
+        'SELECT camada_y.nivel_y AS nivelY,
+                forma.id_forma AS idForma,
+                forma.tipo,
+                forma.posicao_x AS posicaoX,
+                forma.posicao_z AS posicaoZ,
+                forma.dimensao_x AS dimensaoX,
+                forma.dimensao_z AS dimensaoZ,
+                forma.rotacao,
+                forma.quantidade_lados AS lados,
+                forma.expoente,
+                forma.estilo,
+                forma.cor,
+                forma.bloqueado
+         FROM forma
+         INNER JOIN camada_y ON camada_y.id_camada = forma.id_camada
+         WHERE camada_y.id_projeto = :id_projeto
+         ORDER BY forma.id_forma'
+    );
+    $stmt->execute([':id_projeto' => $idProjeto]);
+
+    return $stmt->fetchAll();
+}
+
+function converterForma(array $linha, int $idForma, array $cores): array
+{
+    return [
+        'idForma'   => $idForma,
+        'tipo'      => $linha['tipo'],
+        'estilo'    => $linha['estilo'],
+        'cor'       => $linha['cor'],
+        'posicaoX'  => (int) $linha['posicaoX'],
+        'posicaoZ'  => (int) $linha['posicaoZ'],
+        'dimensaoX' => (int) $linha['dimensaoX'],
+        'dimensaoZ' => (int) $linha['dimensaoZ'],
+        'rotacao'   => (float) $linha['rotacao'],
+        'lados'     => $linha['lados'] === null ? null : (int) $linha['lados'],
+        'expoente'  => $linha['expoente'] === null ? null : (float) $linha['expoente'],
+        'bloqueado' => (bool) $linha['bloqueado'],
+        'cores'     => $cores,
+    ];
+}
+
+function renumerarFormas(array $linhas): array
+{
+    $novosIds = [];
+
+    foreach ($linhas as $posicao => $linha) {
+        $novosIds[(int) $linha['idForma']] = $posicao + 1;
+    }
+
+    return $novosIds;
+}
+
+function mapearCoresDasFormas(array $camadasY): array
+{
+    $coresPorForma = [];
+
+    foreach ($camadasY as $camadaY) {
+        foreach ($camadaY['celulasDasFormas'] as $celulasDaForma) {
+            $coresPorForma[$celulasDaForma['idForma']] = $celulasDaForma['cores'];
+        }
+    }
+
+    return $coresPorForma;
+}
+
+function montarCamadas(array $camadasY, array $linhasFormas): array
+{
+    $novosIds = renumerarFormas($linhasFormas);
+    $coresPorForma = mapearCoresDasFormas($camadasY);
+    $porNivel = [];
+
+    foreach ($camadasY as $camadaY) {
+        $porNivel[$camadaY['nivelY']] = [
+            'nivelY' => $camadaY['nivelY'],
+            'cores'  => $camadaY['cores'],
+            'formas' => [],
+        ];
+    }
+
+    foreach ($linhasFormas as $linha) {
+        $nivelY = (int) $linha['nivelY'];
+        $idReal = (int) $linha['idForma'];
+
+        if (!isset($porNivel[$nivelY])) {
+            $porNivel[$nivelY] = [
+                'nivelY' => $nivelY,
+                'cores'  => [],
+                'formas' => [],
+            ];
+        }
+
+        $porNivel[$nivelY]['formas'][] = converterForma(
+            $linha,
+            $novosIds[$idReal],
+            $coresPorForma[$idReal] ?? []
+        );
+    }
+
+    ksort($porNivel);
+
+    return array_values($porNivel);
 }

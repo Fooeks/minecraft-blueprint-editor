@@ -248,36 +248,114 @@ export function celulasCarregar(camadasY) {
 
             celulasAlterar(camadaY.nivelY, alteracoes);
         }
+
+        for (const forma of camadaY.formas ?? []) {
+            for (const grupoCor of forma.cores) {
+                const celula = Object.freeze({
+                    cor: grupoCor.cor,
+                    idForma: forma.idForma,
+                    idGrupo: null,
+                    ordem: 0
+                });
+                const lista = Object.freeze([celula]);
+                const alteracoes = [];
+
+                for (const posicao of grupoCor.posicoes) {
+                    alteracoes.push({
+                        celulaX: celulasChaveX(posicao),
+                        celulaZ: celulasChaveZ(posicao),
+                        depois: lista
+                    });
+                }
+
+                celulasAlterar(camadaY.nivelY, alteracoes);
+            }
+        }
     }
 }
 
 export function celulasCompactar() {
     const camadasY = [];
 
-    for (const [nivelY, posicoes] of estado.camadas) {
-        if (posicoes.size === 0) {
-            continue;
-        }
+    const niveis = new Set(estado.camadas.keys());
+
+    for (const forma of estado.formas.values()) {
+        niveis.add(forma.nivelY);
+    }
+
+    for (const nivelY of niveis) {
+        
+        const posicoes = estado.camadas.get(nivelY) ?? new Map();
 
         const porCor = new Map();
+        const porForma = new Map();
 
         for (const [chave, lista] of posicoes) {
             const cor = lista[0].cor;
+            const idForma = lista[0].idForma;
 
-            if (!porCor.has(cor)) {
-                porCor.set(cor, []);
+            if (idForma === null || !estado.formas.has(idForma)) {
+                if (!porCor.has(cor)) {
+                    porCor.set(cor, []);
+                }
+
+                porCor.get(cor).push(chave);
+            } else {
+                if (!porForma.has(idForma)) {
+                    porForma.set(idForma, new Map());
+                }
+
+                const porCorDaForma = porForma.get(idForma);
+
+                if (!porCorDaForma.has(cor)) {
+                    porCorDaForma.set(cor, []);
+                }
+
+                porCorDaForma.get(cor).push(chave);
             }
-
-            porCor.get(cor).push(chave);
         }
 
         const cores = [];
+        const formas = [];
 
         for (const [cor, chavesDaCor] of porCor) {
             cores.push({ cor: cor, posicoes: chavesDaCor });
         }
+        
+        for (const forma of estado.formas.values()) {
+            if (forma.nivelY !== nivelY) {
+                continue;
+            }
 
-        camadasY.push({ nivelY: nivelY, cores: cores });
+            const coresDaForma = [];
+            const porCorDaForma = porForma.get(forma.idForma) ?? new Map();
+
+            for (const [cor, chavesDaCor] of porCorDaForma) {
+                coresDaForma.push({ cor: cor, posicoes: chavesDaCor });
+            }
+
+            formas.push({
+                idForma: forma.idForma,
+                tipo: forma.tipo,
+                estilo: forma.estilo,
+                cor: forma.cor,
+                posicaoX: forma.posicaoX,
+                posicaoZ: forma.posicaoZ,
+                dimensaoX: forma.dimensaoX,
+                dimensaoZ: forma.dimensaoZ,
+                rotacao: forma.rotacao,
+                lados: forma.lados ?? null,
+                expoente: forma.expoente ?? null,
+                bloqueado: forma.bloqueado,
+                cores: coresDaForma
+            });
+        }
+
+        if (cores.length === 0 && formas.length === 0) {
+            continue;
+        }
+
+        camadasY.push({ nivelY: nivelY, cores: cores, formas: formas });
     }
 
     return camadasY;

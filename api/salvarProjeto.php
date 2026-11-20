@@ -17,20 +17,11 @@ function posicaoValida(mixed $posicao): bool
     return is_int($posicao) && $posicao >= 0;
 }
 
-function camadaYValida(mixed $camadaY): bool
+function coresValidas(mixed $cores, array &$vistos): bool
 {
-    if (!is_array($camadaY)) {
+    if (!is_array($cores)) {
         return false;
     }
-
-    $nivelY = $camadaY['nivelY'] ?? null;
-    $cores = $camadaY['cores'] ?? null;
-
-    if (!is_int($nivelY) || $nivelY < 1 || $nivelY > 99 || !is_array($cores)) {
-        return false;
-    }
-
-    $vistos = [];
 
     foreach ($cores as $coresIguais) {
         if (!is_array($coresIguais)) {
@@ -56,6 +47,106 @@ function camadaYValida(mixed $camadaY): bool
     return true;
 }
 
+function formaValida(mixed $forma, array &$vistos, array &$idsFormaVistos): bool
+{
+    if (!is_array($forma)) {
+        return false;
+    }
+
+    $idForma = $forma['idForma'] ?? null;
+    $tipo = $forma['tipo'] ?? null;
+    $estilo = $forma['estilo'] ?? null;
+
+    if (!is_int($idForma) || $idForma < 1 || isset($idsFormaVistos[$idForma])) {
+        return false;
+    }
+
+    if (!in_array($tipo, ['poligono', 'superelipse'], true)) {
+        return false;
+    }
+
+    $lados = $forma['lados'] ?? null;
+    $expoente = $forma['expoente'] ?? null;
+
+    if ($tipo === 'poligono') {
+        if (!is_int($lados) || $lados < 3 || $lados > 32 || $expoente !== null) {
+            return false;
+        }
+    } else {
+        if (!(is_int($expoente) || is_float($expoente)) || $expoente < 0.5 || $expoente > 10 || $lados !== null) {
+            return false;
+        }
+    }
+
+    $posicaoX = $forma['posicaoX'] ?? null;
+    $posicaoZ = $forma['posicaoZ'] ?? null;
+    $dimensaoX = $forma['dimensaoX'] ?? null;
+    $dimensaoZ = $forma['dimensaoZ'] ?? null;
+    $rotacao = $forma['rotacao'] ?? null;
+    $bloqueado = $forma['bloqueado'] ?? null;
+    $cor = $forma['cor'] ?? null;
+
+    if (!posicaoValida($posicaoX) || !posicaoValida($posicaoZ)) {
+        return false;
+    }
+
+    if (!is_int($dimensaoX) || $dimensaoX < 1 || !is_int($dimensaoZ) || $dimensaoZ < 1) {
+        return false;
+    }
+
+    if (!(is_int($rotacao) || is_float($rotacao)) || $rotacao < 0 || $rotacao >= 360) {
+        return false;
+    }
+
+    if (!is_bool($bloqueado)) {
+        return false;
+    }
+
+    if (!corValida($cor)) {
+        return false;
+    }
+
+    if (!in_array($estilo, ['preenchida', 'contorno'], true)) {
+        return false;
+    }
+
+    if (!coresValidas($forma['cores'] ?? null, $vistos)) { 
+        return false; 
+    }
+    
+    $idsFormaVistos[$idForma] = true;
+    return true;
+}
+
+function camadaYValida(mixed $camadaY, array &$idsFormaVistos): bool
+{
+    if (!is_array($camadaY)) {
+        return false;
+    }
+
+    $nivelY = $camadaY['nivelY'] ?? null;
+    $cores = $camadaY['cores'] ?? null;
+    $formas = $camadaY['formas'] ?? [];
+
+    if (!is_int($nivelY) || $nivelY < 1 || $nivelY > 99 || !is_array($formas)) {
+        return false;
+    }
+
+    $vistos = [];
+
+    if (!coresValidas($cores, $vistos)) {
+        return false;
+    }
+
+    foreach ($formas as $forma) {
+        if (!formaValida($forma, $vistos, $idsFormaVistos)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function camadasYValidas(mixed $camadasY): bool
 {
     if (!is_array($camadasY)) {
@@ -63,9 +154,10 @@ function camadasYValidas(mixed $camadasY): bool
     }
 
     $nivelYVistos = [];
+    $idsFormaVistos = [];
 
     foreach ($camadasY as $camadaY) {
-        if (!camadaYValida($camadaY)) {
+        if (!camadaYValida($camadaY, $idsFormaVistos)) {
             return false;
         }
 
@@ -81,17 +173,15 @@ function camadasYValidas(mixed $camadasY): bool
     return true;
 }
 
-function dentroDosLimites(array $camadasY, int $dimensaoX, int $dimensaoZ): bool
+function coresDentroDosLimites(array $cores, int $dimensaoX, int $dimensaoZ): bool
 {
-    foreach ($camadasY as $camadaY) {
-        foreach ($camadaY['cores'] as $cor) {
-            foreach ($cor['posicoes'] as $posicao) {
-                $celulaX = intdiv($posicao, 1000);
-                $celulaZ  = $posicao % 1000;
+    foreach ($cores as $cor) {
+        foreach ($cor['posicoes'] as $posicao) {
+            $celulaX = intdiv($posicao, 1000);
+            $celulaZ  = $posicao % 1000;
 
-                if ($celulaX >= $dimensaoX || $celulaZ >= $dimensaoZ) {
-                    return false;
-                }
+            if ($celulaX >= $dimensaoX || $celulaZ >= $dimensaoZ) {
+                return false;
             }
         }
     }
@@ -99,8 +189,37 @@ function dentroDosLimites(array $camadasY, int $dimensaoX, int $dimensaoZ): bool
     return true;
 }
 
-function camadaYTemCelulasPintadas(array $camadaY): bool
+function dentroDosLimites(array $camadasY, int $dimensaoX, int $dimensaoZ): bool
 {
+    foreach ($camadasY as $camadaY) {
+        if (!coresDentroDosLimites($camadaY['cores'], $dimensaoX, $dimensaoZ)) {
+            return false;
+        }
+
+        foreach ($camadaY['formas'] ?? [] as $forma) {
+            if (!coresDentroDosLimites($forma['cores'], $dimensaoX, $dimensaoZ)) {
+                return false;
+            }
+
+            if ($forma['posicaoX'] >= $dimensaoX || $forma['posicaoZ'] >= $dimensaoZ) {
+                return false;
+            }
+
+            if ($forma['dimensaoX'] > $dimensaoX || $forma['dimensaoZ'] > $dimensaoZ) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function camadaYTemConteudo(array $camadaY): bool
+{
+    if (($camadaY['formas'] ?? []) !== []) {
+        return true;
+    }
+
     foreach ($camadaY['cores'] as $cores) {
         if ($cores['posicoes'] !== []) {
             return true;
@@ -110,12 +229,12 @@ function camadaYTemCelulasPintadas(array $camadaY): bool
     return false;
 }
 
-function montarCelulas(array $posicoes, string $cor): array
+function montarCelulas(array $posicoes, string $cor, ?int $idForma): array
 {
     $celulas = [];
 
     foreach ($posicoes as $posicao) {
-        $celulas[] = [intdiv($posicao, 1000), $posicao % 1000, $cor];
+        $celulas[] = [intdiv($posicao, 1000), $posicao % 1000, $cor, $idForma];
     }
 
     return $celulas;
@@ -178,7 +297,7 @@ try {
     $maiorCamadaY = 1;
 
     foreach ($camadasY as $camadaY) {
-        if (camadaYTemCelulasPintadas($camadaY)) {
+        if (camadaYTemConteudo($camadaY)) {
             $maiorCamadaY = max($maiorCamadaY, $camadaY['nivelY']);
         }
     }
@@ -186,10 +305,34 @@ try {
     $pdo->beginTransaction();
 
     apagarCelulas($pdo, $idProjeto);
+    apagarFormas($pdo, $idProjeto);
     apagarCamadasYAcima($pdo, $idProjeto, $maiorCamadaY);
     criarCamadasYMeio($pdo, $idProjeto, $maiorCamadaY);
 
     $ids = buscarIdsCamadaY($pdo, $idProjeto);
+
+    $lista = [];
+
+    foreach ($camadasY as $camadaY) {
+        foreach ($camadaY['formas'] ?? [] as $forma) {
+            $lista[$forma['idForma']] = [
+                'nivelY'   => $camadaY['nivelY'],
+                'forma' => $forma,
+            ];
+        }
+    }
+
+    ksort($lista);
+
+    $idsReais = [];
+
+    foreach ($lista as $idForma => $item) {
+        $idsReais[$idForma] = inserirForma(
+            $pdo,
+            $ids[$item['nivelY']],
+            $item['forma']
+        );
+    }
 
     foreach ($camadasY as $camadaY) {
         foreach ($camadaY['cores'] as $cores) {
@@ -197,8 +340,22 @@ try {
                 inserirCelulas(
                     $pdo,
                     $ids[$camadaY['nivelY']],
-                    montarCelulas($celulas, $cores['cor'])
+                    montarCelulas($celulas, $cores['cor'], null)
                 );
+            }
+        }
+    }
+
+    foreach ($camadasY as $camadaY) {
+        foreach ($camadaY['formas'] ?? [] as $forma) {
+            foreach ($forma['cores'] as $cores) {
+                foreach (array_chunk($cores['posicoes'], 1000) as $celulas) {
+                    inserirCelulas( 
+                        $pdo,
+                        $ids[$camadaY['nivelY']],
+                        montarCelulas($celulas, $cores['cor'], $idsReais[$forma['idForma']])
+                    );
+                }
             }
         }
     }

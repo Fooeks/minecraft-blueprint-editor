@@ -40,7 +40,10 @@ try {
         exit;
     }
 
-    $projeto['camadas'] = buscarCamadasY($pdo, $idProjeto);
+    $camadasY = buscarCamadasY($pdo, $idProjeto);
+    $linhasFormas = buscarFormas($pdo, $idProjeto);
+
+    $projeto['camadas'] = montarCamadas($camadasY, $linhasFormas);
 
     echo json_encode($projeto);
 } catch (PDOException $e) {
