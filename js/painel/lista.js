@@ -47,6 +47,7 @@ function listaClicar(evento) {
     const idForma = Number(botao.dataset.idForma);
 
     document.dispatchEvent(new CustomEvent(formaEventoSelecionar, { detail: { idForma: idForma } }));
+    botao.blur();
 }
 
 export function listaIniciar() {

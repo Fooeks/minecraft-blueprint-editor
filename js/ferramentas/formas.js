@@ -3,7 +3,7 @@ import { geometriaRasterizar, geometriaDentro } from "../geometria.js";
 import { pedirRedesenho, centroVisivelCelula, pixelParaCelulaX, pixelParaCelulaZ, verificarPosicaoCelula } from "../grid.js";
 import { abasSincronizar } from "../painel/abas.js";
 import { selecionarFerramenta, janelaAberta, campoDeTexto } from "./ativa.js";
-import { formaInserir, formaAtualizar, formaEventoRascunhoMudou, formaEventoSelecionar } from "../forma.js";
+import { formaInserir, formaAtualizar, formaEventoRascunhoMudou, formaEventoSelecionar, formaExcluir } from "../forma.js";
 import { historicoFecharAcao, historicoIniciarAcao } from "../historico.js";
 import { celulasBloqueada, celulasEventoMudou, celulasObter } from "../celulas.js";
 import { camadaYMudar } from "../camada.js";
@@ -411,6 +411,30 @@ function formasConfirmar() {
     document.dispatchEvent(new Event(celulasEventoMudou));
 }
 
+function formasExcluir() {
+    if (estado.projetoAberto === null || estado.previaForma === null) {
+        return;
+    }
+
+    if (estado.previaForma.idForma === null) {
+        return;
+    }
+
+    historicoIniciarAcao();
+
+    const apagar = formaExcluir(estado.previaForma.idForma);
+
+    historicoFecharAcao();
+
+    if (!apagar) {
+        return;
+    }
+
+    estado.previaForma = null;
+    pedirRedesenho();
+    document.dispatchEvent(new Event(celulasEventoMudou));
+}
+
 function formasCancelar() {
     estado.previaForma = null;
     pedirRedesenho();
@@ -429,7 +453,7 @@ function formasTeclado(evento) {
         return;
     }
 
-    if (evento.key !== "Enter" && evento.key !== "Escape") {
+    if (evento.key !== "Enter" && evento.key !== "Escape" && evento.key !== "Delete") {
         return;
     }
 
@@ -451,6 +475,11 @@ function formasTeclado(evento) {
     }
 
     if (evento.target.closest("button") !== null) {
+        return;
+    }
+
+    if (evento.key === "Delete") {
+        formasExcluir();
         return;
     }
 

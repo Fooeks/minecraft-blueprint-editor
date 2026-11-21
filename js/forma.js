@@ -146,6 +146,32 @@ export function formaAtualizar(idForma, parametros) {
     return nova;
 }
 
+export function formaExcluir(idForma) {
+    const forma = estado.formas.get(idForma);
+
+    if (forma === undefined) {
+        return false;
+    }
+
+    const apagar = [];
+
+    for (const posicao of geometriaRasterizar(forma)) {
+        const lista = celulasObter(forma.nivelY, posicao.celulaX, posicao.celulaZ);
+        const listaNova = celulasListaRemover(lista, idForma);
+
+        if (listaNova !== lista) {
+            apagar.push({ celulaX: posicao.celulaX, celulaZ: posicao.celulaZ, depois: listaNova });
+        }
+    }
+
+    historicoRegistrar(celulasAlterar(forma.nivelY, apagar));
+
+    historicoRegistrarForma(idForma, forma.nivelY, forma, null);
+    estado.formas.delete(idForma);
+
+    return true;
+}
+
 export function formaRascunhoDescartar() {
     if (estado.previaForma === null) {
         return;

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%" preserveAspectRatio="none" style="image-rendering: pixelated;">
+  <defs>
+    <!-- Padrão repetitivo da textura de terra e grama -->
+    <pattern id="minecraftDirtHeader" width="64" height="64" patternUnits="userSpaceOnUse">
+      <!-- Fundo: Bloco de Terra Base -->
+      <rect width="64" height="64" fill="#573d26" />
+
+      <!-- Textura de Terra (Pixels de tom escuro e claro) -->
+      <!-- Tom Escuro de Terra -->
+      <path d="M4 4h4v4H4zm12 8h4v4h-4zm24-4h4v4h-4zm16 8h4v4h-4zm-48 16h4v4H12zm32 4h4v4h-4zm-16 12h4v4h-4zm32-4h4v4h-4zm-40 12h4v4H8zm24 4h4v4h-4zm20-8h4v4h-4z" fill="#3b2716" />
+      <!-- Tom Médio/Claro de Terra -->
+      <path d="M24 4h4v4h-4zm20 8h4v4h-4zM4 16h4v4H4zm44 4h4v4h-4zm-28 8h4v4h-4zm36 0h4v4h-4zM20 36h4v4h-4zm24 4h4v4h-4zM8 44h4v4H8zm32 4h4v4h-4zm-16 8h4v4h-4zm28 0h4v4h-4z" fill="#755234" />
+      <!-- Pixels de Destaque/Pedregulhos -->
+      <path d="M36 20h4v4h-4zM16 28h4v4h-4zM52 36h4v4h-4zM4 48h4v4H4zm28 8h4v4h-4z" fill="#8c6441" />
+
+      <!-- Camada Superior de Grama -->
+      <!-- Grama Base (Verde Principal) -->
+      <rect width="64" height="12" fill="#5c8e32" />
+      <!-- Detalhes Pendurados da Grama -->
+      <path d="M0 12h8v4H0zm12 0h4v8h-4zm20 0h8v4h-8zm16 0h4v8h-4zm8 0h8v4h-8z" fill="#5c8e32" />
+
+      <!-- Sombras da Grama (Verde Escuro) -->
+      <path d="M0 10h64v2H0z" fill="#3d6121" />
+      <path d="M0 14h8v2H0zm12 4h4v2h-4zm20-4h8v2h-8zm16 4h4v2h-4zm8-4h8v2h-8z" fill="#3d6121" />
+
+      <!-- Brilhos da Grama (Verde Claro Superior) -->
+      <path d="M0 0h64v4H0z" fill="#7cbd3a" />
+      <path d="M4 4h8v2H4zm16 0h12v2H20zm16 0h8v2h-8zm12 0h12v2H48z" fill="#93da49" />
+    </pattern>
+  </defs>
+
+  <!-- Preenchimento total usando o padrão -->
+  <rect width="100%" height="100%" fill="url(#minecraftDirtHeader)" />
+</svg>

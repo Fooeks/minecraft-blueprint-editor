@@ -13,6 +13,8 @@
     --cor-hover-barra: #d6cab2;
     --opacidade-desabilitado: 0.5;
     --cor-erro: #a63d2f;
+    --cor-titulo: #ffffff;
+    --cor-sombra-titulo: #2a1f14;
 }
 
 html, body {
@@ -22,7 +24,7 @@ html, body {
 
 body {
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
     background-color: var(--cor-fundo-pagina);
     color: var(--cor-texto);
     font-family: "Inter", system-ui, "Segoe UI", sans-serif;
@@ -30,6 +32,26 @@ body {
 
 button, input {
     font-family: inherit;
+}
+
+#cabecalho-site {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 10px;
+    background-image: url("../img/banner.svg");
+    background-size: 64px 64px;
+    background-repeat: repeat-x;
+    image-rendering: pixelated;
+}
+
+#cabecalho-site h1 {
+    margin: 0;
+    font-family: "Pixelify Sans", sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-titulo);
+    text-shadow: 2px 2px 0 var(--cor-sombra-titulo);
 }
 
 #gestao-projetos,
@@ -534,7 +556,7 @@ dialog p[role="alert"], #forma-alerta {
     inset: auto;
     margin: 0;
     position: fixed;
-    top: 120px;
+    top: 184px;
     left: 50%;
     transform: translateX(-50%);
     pointer-events: none;
