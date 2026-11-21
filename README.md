@@ -125,7 +125,7 @@ index.html (Estrutura da página)
 
 `js/notificacao.js`, `js/gestao/pendentes.js` => Auxiliam a mostrar notificações e identificar alterações pendentes.
 
- ,`js/gestao/lista.js` => Auxilia a montar a lista de projetos salvos para `js/gestao/abrir.js` e `js/gestao/excluir.js`.
+ `js/gestao/lista.js` => Auxilia a montar a lista de projetos salvos para `js/gestao/abrir.js` e `js/gestao/excluir.js`.
 
 `js/armazenamento.js`, `js/gestao/reabrir.js` => Guarda e reabre o último projeto aberto.
 
